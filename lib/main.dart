@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'api_requests.dart';
 
 void main() => runApp(MyApp());
 
@@ -23,9 +24,15 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  @override
+  void initState() {
+    super.initState();
+    getDeveloper('kevin@aol.com','1234');
+}
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
