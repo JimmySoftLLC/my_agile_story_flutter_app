@@ -27,7 +27,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    getDeveloper('kevin@aol.com','1234');
+    loginDeveloper('flutter@anywhere.com','1234');
 }
 
   @override
