@@ -21,7 +21,7 @@ void loginDeveloper(email,password) async {
   http.Response response = await http.post(url, body: body, headers: headers);
   if (response.statusCode == 200) {
     myDeveloper = new Developer.fromJson(json.decode(response.body));
-    //printDeveloper(myDeveloper,response);
+    printDeveloper(myDeveloper,response);
 
     //TODO    setMyAglileStoryDeveloperStorage();
 
