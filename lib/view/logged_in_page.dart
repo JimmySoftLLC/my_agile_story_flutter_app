@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
-import '../api_requests.dart';
+import 'package:my_agile_story_flutter_app/controller/api_requests.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:my_agile_story_flutter_app/view/home_page.dart';
+import 'package:my_agile_story_flutter_app/view/logged_in_page.dart';
+import 'package:my_agile_story_flutter_app/view/video_page.dart';
+import 'package:my_agile_story_flutter_app/view/login_in.dart';
+import 'package:my_agile_story_flutter_app/view/register_new_developer.dart';
 
 class Choice {
   const Choice({this.title,});
@@ -14,6 +19,7 @@ List<Choice> choices = <Choice>[
 ];
 
 class MyLoggedInPage extends StatefulWidget {
+  static const String id ='/MyLoggedInPage';
   @override
   _MyLoggedInPageState createState() => _MyLoggedInPageState();
 }
@@ -74,7 +80,7 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
             IconButton(icon: Icon(FontAwesomeIcons.edit), onPressed: () {},),
             IconButton(icon: Icon(FontAwesomeIcons.newspaper), onPressed: () {},),
             IconButton(icon: Icon(FontAwesomeIcons.userEdit), onPressed: () {},),
-            IconButton(icon: Icon(FontAwesomeIcons.signOutAlt), onPressed: () {Navigator.pushReplacementNamed(context, '/MyHomePage');},),
+            IconButton(icon: Icon(FontAwesomeIcons.signOutAlt), onPressed: () {Navigator.pushReplacementNamed(context, MyHomePage.id);},),
 
           ],
         ),

@@ -1,9 +1,9 @@
-import 'api_requests.dart';
-import 'developer.dart';
-import 'project.dart';
+import 'package:my_agile_story_flutter_app/controller/api_requests.dart';
+import 'package:my_agile_story_flutter_app/controller/developer.dart';
+import 'package:my_agile_story_flutter_app/controller/project.dart';
 import 'user_story.dart';
 
-void testNewDeveloper(){
+void testNewDeveloper(context){
   Developer myNewDeveloper = new Developer(
       'NoID',
       'newdeveloper@anywhere.com',
@@ -12,15 +12,15 @@ void testNewDeveloper(){
       'Developer',
       'a developer with many skills',
       'admin');
-  createNewDeveloper(myNewDeveloper);
+  createNewDeveloper(myNewDeveloper,context);
 }
 
-void testNewProject(thisDeveloper){
+void testNewProject(thisDeveloper,context){
   Project myNewProject = new Project(
       'NoID',
       'New Project',
       'This is the greatest project ever!');
-  createNewProject(thisDeveloper, myNewProject);
+  createNewProject(thisDeveloper, myNewProject,context);
 }
 
 void testNewUserStory(thisProject){
@@ -59,12 +59,12 @@ void testUpdateUserStory(thisProject){
   editUserStory(thisProject, myUpDatedUserStory);
 }
 
-void testUpdateProject(thisDeveloper,myProjectIndex){
+void testUpdateProject(thisDeveloper,myProjectIndex,context){
   Project myUpdateProject = new Project(
       'id',
       'This is edit project name',
       'Edited project description');
-  editProject(thisDeveloper,myUpdateProject,myProjectIndex);
+  editProject(thisDeveloper,myUpdateProject,myProjectIndex,context);
 }
 
 //testUpdateDeveloper(myDeveloper);
@@ -85,6 +85,6 @@ void testDeleteUserStory(myUserStoryIndex){
   deleteUserStory(myUserStoryIndex);
 }
 
-void testDeleteProject(myProjectIndex){
-  deleteProject(myProjectIndex);
+void testDeleteProject(myProjectIndex,context){
+  deleteProject(myProjectIndex,context);
 }

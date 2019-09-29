@@ -3,6 +3,11 @@ import 'dart:async';
 import 'package:meta/meta.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:my_agile_story_flutter_app/view/home_page.dart';
+import 'package:my_agile_story_flutter_app/view/logged_in_page.dart';
+import 'package:my_agile_story_flutter_app/view/video_page.dart';
+import 'package:my_agile_story_flutter_app/view/login_in.dart';
+import 'package:my_agile_story_flutter_app/view/register_new_developer.dart';
 
 class FlutterYoutube {
   static const MethodChannel _channel =
@@ -79,7 +84,7 @@ class FlutterYoutube {
       'autoPlay': autoPlay,
       'fullScreen': fullScreen
     };
-    _channel.invokeMethod('playYoutubeVideo', params);
+    _channel.invokeMethod('/playYoutubeVideo', params);
   }
 
   Stream<String> done;
@@ -92,6 +97,7 @@ class FlutterYoutube {
 
 
 class MyVideoPage extends StatefulWidget {
+  static const String id ='MyVideoPage';
   @override
   _MyVideoPageState createState() => new _MyVideoPageState();
 }
@@ -152,7 +158,7 @@ class _MyVideoPageState extends State<MyVideoPage> {
     return new MaterialApp(
       home: new Scaffold(
         appBar: AppBar(
-          title: Text('My Agile Story',style: TextStyle(fontSize: 17,)),
+          title: Text('My Agile Story Videos',style: TextStyle(fontSize: 17,)),
           backgroundColor: Colors.blue,
           actions: <Widget>[
             // overflow menu
@@ -163,32 +169,94 @@ class _MyVideoPageState extends State<MyVideoPage> {
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              IconButton(icon: Icon(FontAwesomeIcons.angleLeft), onPressed: () {Navigator.pushReplacementNamed(context, '/MyHomePage');},),
+              IconButton(icon: Icon(FontAwesomeIcons.angleLeft), onPressed: () {Navigator.pushReplacementNamed(context, MyHomePage.id);},),
             ],
           ),
         ),
         body: Center(
             child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  RaisedButton(
-                      child: new Text("Play Entire Video"),
-                      onPressed: () {playYoutubeVideo("https://youtu.be/PHabA6CTFXA");},),
-                  RaisedButton(
-                      child: new Text("Start at Set up user"),
-                    onPressed: () {playYoutubeVideo("https://youtu.be/PHabA6CTFXA?t=37");},),
-                  RaisedButton(
-                      child: new Text("Start at Logging in"),
-                    onPressed: () {playYoutubeVideo("https://youtu.be/PHabA6CTFXA");},),
-                  RaisedButton(
-                      child: new Text("Start at Create project"),
-                    onPressed: () {playYoutubeVideo("https://youtu.be/PHabA6CTFXA");},),
-                  RaisedButton(
-                      child: new Text("Start at Create user story"),
-                    onPressed: () {playYoutubeVideo("https://youtu.be/PHabA6CTFXA");},),
-                  RaisedButton(
-                  child: new Text("Start at My Agile Story example"),
-                    onPressed: () {playYoutubeVideo("https://youtu.be/PHabA6CTFXA");},),
+                  Container(
+                    padding:EdgeInsets.symmetric(vertical: 16.0),
+                    width: 300,
+                    child: Text("The videos are from the JimmySoft LLC youtube channel.  You can play the entire video or just click the the clip your are interested in.",
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.visible,
+                    maxLines: 4,),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16.0),
+                    child: Material(
+                      color: Colors.lightBlueAccent,
+                      borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                      elevation: 5.0,
+                      child: MaterialButton(
+                        onPressed: () {
+                          playYoutubeVideo("https://youtu.be/PHabA6CTFXA");
+                        },
+                        minWidth: 200.0,
+                        height: 42.0,
+                        child: Text(
+                          'Play Entire Video',
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16.0),
+                    child: Material(
+                      color: Colors.lightBlueAccent,
+                      borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                      elevation: 5.0,
+                      child: MaterialButton(
+                        onPressed: () {
+                          playYoutubeVideo("https://youtu.be/PHabA6CTFXA");
+                        },
+                        minWidth: 200.0,
+                        height: 42.0,
+                        child: Text(
+                          'Create a new user',
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16.0),
+                    child: Material(
+                      color: Colors.lightBlueAccent,
+                      borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                      elevation: 5.0,
+                      child: MaterialButton(
+                        onPressed: () {
+                          playYoutubeVideo("https://youtu.be/PHabA6CTFXA");
+                        },
+                        minWidth: 200.0,
+                        height: 42.0,
+                        child: Text(
+                          'Create a project',
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16.0),
+                    child: Material(
+                      color: Colors.lightBlueAccent,
+                      borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                      elevation: 5.0,
+                      child: MaterialButton(
+                        onPressed: () {
+                          playYoutubeVideo("https://youtu.be/PHabA6CTFXA");;
+                        },
+                        minWidth: 200.0,
+                        height: 42.0,
+                        child: Text(
+                          'Create a user story',
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
             )
         ),

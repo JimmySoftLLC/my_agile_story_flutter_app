@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
-import '../api_requests.dart';
+import 'package:my_agile_story_flutter_app/controller/api_requests.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:my_agile_story_flutter_app/view/home_page.dart';
+import 'package:my_agile_story_flutter_app/view/logged_in_page.dart';
+import 'package:my_agile_story_flutter_app/view/video_page.dart';
+import 'package:my_agile_story_flutter_app/view/login_in.dart';
+import 'package:my_agile_story_flutter_app/view/register_new_developer.dart';
 
 class MyHomePage extends StatefulWidget {
+  static const String id ='/MyHomePage';
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -32,9 +38,9 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            IconButton(icon: Icon(FontAwesomeIcons.video), onPressed: () {Navigator.pushReplacementNamed(context, '/MyVideoPage');},),
-            IconButton(icon: Icon(FontAwesomeIcons.userPlus), onPressed: () {},),
-            IconButton(icon: Icon(FontAwesomeIcons.signInAlt), onPressed: () {Navigator.pushReplacementNamed(context, '/MyLoggedInPage');},),
+            IconButton(icon: Icon(FontAwesomeIcons.video), onPressed: () {Navigator.pushReplacementNamed(context, MyVideoPage.id);},),
+            IconButton(icon: Icon(FontAwesomeIcons.userPlus), onPressed: () {Navigator.pushReplacementNamed(context, RegistrationScreen.id);},),
+            IconButton(icon: Icon(FontAwesomeIcons.signInAlt), onPressed: () {Navigator.pushReplacementNamed(context, LoginScreen.id);},),
           ],
         ),
       ),
@@ -45,18 +51,13 @@ class _MyHomePageState extends State<MyHomePage> {
       );
   }
 
+
   @override
   void deactivate() {
     print ('home screen deactivated');
     super.deactivate();
   }
 }
-
-
-
-//              onPressed: () {
-//                Navigator.pushNamed(context, '/first');
-//              },
 
 
 

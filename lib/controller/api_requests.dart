@@ -5,10 +5,14 @@ import 'project.dart';
 import 'user_story.dart';
 import 'error.dart';
 import 'debug_printing.dart';
+import 'dom_equivalents.dart';
+import 'test_api.dart';
+import 'package:flutter/material.dart';
+import 'package:my_agile_story_flutter_app/view/home_page.dart';
 
 const String URL_Address = 'https://shrouded-basin-24147.herokuapp.com';
 
-void loginDeveloper(email,password) async {
+void loginDeveloper(email,password,context) async {
   var url = URL_Address + '/get/developer';
   var body = json.encode({
     'email': email,
@@ -23,8 +27,6 @@ void loginDeveloper(email,password) async {
     myDeveloper = new Developer.fromJson(json.decode(response.body));
     printDeveloper(myDeveloper,response);
 
-    //TODO    setMyAglileStoryDeveloperStorage();
-
     //testNewDeveloper();
 
     //testNewProject(myDeveloper);
@@ -33,7 +35,7 @@ void loginDeveloper(email,password) async {
 
     //testUpdateDeveloper();
 
-    getProjects(myDeveloper,-1);
+    getProjects(myDeveloper,-1,context);
 
     } else {
     //    printError(response);
@@ -42,7 +44,7 @@ void loginDeveloper(email,password) async {
     }
 }
 
-void getProjects(thisDeveloper,myProjectIndex) async {
+void getProjects(thisDeveloper,myProjectIndex,context) async {
   var url = URL_Address + '/get/projects';
   var body = json.encode({
     'projectIds': thisDeveloper.projectIds,
@@ -58,15 +60,14 @@ void getProjects(thisDeveloper,myProjectIndex) async {
     myProjects =[];
     for (int i = 0; i < myTempProjects.length; i++) {
       myProjects.add(new Project.fromJson(myTempProjects[i])) ;
-      //printProject (myProjects[i],response);
+      printProject (myProjects[i],response);
     }
 
-    getUserStorys(myProjects[0]);
+    //getUserStorys(myProjects[0]);
 
     //testUpdateUserStory(myProjects[0]);
 
-    //TODO    setMyAglileStoryProjectStorage();
-    //TODO    loggedinMenu(myProjectIndex);
+    loggedinMenu(myProjectIndex,context);
   } else {
     //    printError(response);
     myApiError = new ApiError.fromJson(json.decode(response.body));
@@ -111,7 +112,7 @@ void getUserStorys(thisProject) async {
   }
 }
 
-void createNewDeveloper(thisDeveloper) async {
+void createNewDeveloper(thisDeveloper,context) async {
   //TODO  updateDeveloperMessage("Creating new developer please wait");
   var url = URL_Address + '/developer';
   var body = json.encode({
@@ -131,6 +132,7 @@ void createNewDeveloper(thisDeveloper) async {
   if (response.statusCode == 200) {
     var myTempDeveloper = json.decode(response.body);
     myDeveloper = new Developer.fromJson(myTempDeveloper);
+    Navigator.pushReplacementNamed(context, MyHomePage.id);
     //printDeveloper(myDeveloper,response);
     //TODO  setMyAglileStoryDeveloperStorage();
     //TODO  updateStatus("Developer created");
@@ -141,7 +143,7 @@ void createNewDeveloper(thisDeveloper) async {
   }
 }
 
-void createNewProject(thisDeveloper,thisProject) async {
+void createNewProject(thisDeveloper,thisProject,context) async {
   //TODO  updateDeveloperMessage("Creating new project please wait");
   var url = URL_Address + '/developer/project';
   var body = json.encode({
@@ -160,7 +162,7 @@ void createNewProject(thisDeveloper,thisProject) async {
     myProject = new Project.fromJson(myTempDeveloper);
     //printProject(myProject,response);
     thisDeveloper.projectIds.push(myProject._id);
-    getProjects(myDeveloper,-1);
+    getProjects(myDeveloper,-1,context);
     //updateStatus('Project ' +  myProject.name + ', created successfully');
   } else {
     //printError(response);
@@ -240,7 +242,7 @@ void editUserStory(thisProject,thisUserStory) async {
   }
 }
 
-void editProject(thisDeveloper,thisProject,myProjectIndex) async {
+void editProject(thisDeveloper,thisProject,myProjectIndex,context) async {
   //TODO  updateDeveloperMessage("Editing project please wait");
   var url = URL_Address + '/put/project';
   var body = json.encode({
@@ -258,7 +260,7 @@ void editProject(thisDeveloper,thisProject,myProjectIndex) async {
     var myTempProject = json.decode(response.body);
     myProject = new Project.fromJson(myTempProject);
     printProject(myProject,response);
-    getProjects(thisDeveloper, myProjectIndex);
+    getProjects(thisDeveloper, myProjectIndex,context);
     //TODO  updateStatus("Project " + myProject.name + ", edited successfully");
   } else {
     printError(response);
@@ -334,7 +336,7 @@ void deleteUserStory(myUserStoryIndex) async {
   }
 }
 
-void deleteProject(myProjectIndex) async {
+void deleteProject(myProjectIndex,context) async {
   if (myProjectIndex != -1 && myProjects.length > 0) {
     //TODO  updateStatus("Deleting project please wait");
     var url = URL_Address + '/delete/project/userStorys';
@@ -358,7 +360,7 @@ void deleteProject(myProjectIndex) async {
       http.Response response = await http.post(url, body: body, headers: headers);
       if (response.statusCode == 200) {
         print('project deleted');
-        getProjects(myDeveloper, -1);
+        getProjects(myDeveloper, -1,context);
       } else {
         printError(response);
         myApiError = new ApiError.fromJson(json.decode(response.body));

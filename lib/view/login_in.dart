@@ -1,14 +1,59 @@
 import 'package:flutter/material.dart';
+import 'package:my_agile_story_flutter_app/view/home_page.dart';
+import 'package:my_agile_story_flutter_app/view/logged_in_page.dart';
+import 'package:my_agile_story_flutter_app/view/video_page.dart';
+import 'package:my_agile_story_flutter_app/view/login_in.dart';
+import 'package:my_agile_story_flutter_app/view/register_new_developer.dart';
+import 'package:my_agile_story_flutter_app/controller/api_requests.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class LoginScreen extends StatefulWidget {
+  static const String id ='/LoginScreen';
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  String myText = '';
+  String email = 'flutter@anywhere.com';
+  String password = '1234';
+
+  void validateEntries() {
+    print (email.toString());
+    print (password.toString());
+    if (email == '' || password == '' ) {
+      setState(() {
+        myText = 'No entries please enter email and password.';
+      });
+    }else{
+      setState(() {
+        myText = 'Logging on to server please wait.';
+      });
+      loginDeveloper(email,password,context);
+    }
+  }
+
+  var txt = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Login New User',style: TextStyle(fontSize: 17,)),
+        backgroundColor: Colors.blue,
+        actions: <Widget>[
+          // overflow menu
+        ],
+      ),
+      bottomNavigationBar: BottomAppBar(
+        child: new Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            IconButton(icon: Icon(FontAwesomeIcons.angleLeft), onPressed: () {Navigator.pushReplacementNamed(context, MyHomePage.id);},),
+          ],
+        ),
+      ),
       backgroundColor: Colors.white,
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 24.0),
@@ -17,15 +62,16 @@ class _LoginScreenState extends State<LoginScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Container(
-              height: 200.0,
-              child: Image.asset('images/logo.png'),
+              height: 50.0,
+              //child: Image.asset('images/logo.png'),
             ),
             SizedBox(
               height: 48.0,
             ),
             TextField(
+              //controller: TextEditingController()..text = 'flutter@anywhere.com',
               onChanged: (value) {
-                //Do something with the user input.
+                email = value;
               },
               decoration: InputDecoration(
                 hintText: 'Enter your email',
@@ -50,8 +96,9 @@ class _LoginScreenState extends State<LoginScreen> {
               height: 8.0,
             ),
             TextField(
+              //controller: TextEditingController()..text = '',
               onChanged: (value) {
-                //Do something with the user input.
+                password=value;
               },
               decoration: InputDecoration(
                 hintText: 'Enter your password.',
@@ -83,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 elevation: 5.0,
                 child: MaterialButton(
                   onPressed: () {
-                    //Implement login functionality.
+                      validateEntries();
                   },
                   minWidth: 200.0,
                   height: 42.0,
@@ -92,6 +139,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
+            ),
+            SizedBox(
+              height: 8.0,
+            ),
+            Text(
+              myText,
             ),
           ],
         ),
