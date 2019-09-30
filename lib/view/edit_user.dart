@@ -5,28 +5,20 @@ import 'package:my_agile_story_flutter_app/view/video_page.dart';
 import 'package:my_agile_story_flutter_app/view/login_in.dart';
 import 'package:my_agile_story_flutter_app/view/register_new_developer.dart';
 import 'package:my_agile_story_flutter_app/controller/api_requests.dart';
-import 'package:my_agile_story_flutter_app/controller/developer.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:my_agile_story_flutter_app/controller/developer.dart';
 
-class RegistrationScreen extends StatefulWidget {
-  static const String id ='/RegistrationScreen';
+class EditUser extends StatefulWidget {
+  static const String id ='/EditUser';
   @override
-  _RegistrationScreenState createState() => _RegistrationScreenState();
+  _EditUserState createState() => _EditUserState();
 }
 
-class _RegistrationScreenState extends State<RegistrationScreen> {
-
+class _EditUserState extends State<EditUser> {
   String myText = '';
-  String email = '';
-  String password = '';
-  String firstName = '';
-  String lastName = '';
-  String bio = '';
 
-  void validateEntries() {
-    print (email.toString());
-    print (password.toString());
-    if (password == '' ) {
+  void validateEntries(context) {
+    if (1==2) {
       setState(() {
         myText = 'No entries please enter email and password.';
       });
@@ -34,24 +26,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       setState(() {
         myText = 'Registering user please wait.';
       });
-
-      Developer myNewDeveloper = new Developer(
-          'NoID',
-          email,
-          password,
-          firstName,
-          lastName,
-          bio,
-          'admin');
-      createNewDeveloper(myNewDeveloper,context);
+      editDeveloper(myDeveloper,context);
     }
   }
+
+  var txt = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Register New User',style: TextStyle(fontSize: 17,)),
+        title: Text('Edit User',style: TextStyle(fontSize: 17,)),
         backgroundColor: Colors.blue,
         actions: <Widget>[
           // overflow menu
@@ -62,7 +47,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            IconButton(icon: Icon(FontAwesomeIcons.angleLeft), onPressed: () {Navigator.pushReplacementNamed(context, MyHomePage.id);},),
+            IconButton(icon: Icon(FontAwesomeIcons.angleLeft), onPressed: () {Navigator.pushReplacementNamed(context, MyLoggedInPage.id);},),
           ],
         ),
       ),
@@ -73,37 +58,23 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            TextField(
-              //controller: TextEditingController()..text = '',
-              onChanged: (value) {
-                email = value;
-              },
-              decoration: InputDecoration(
-                hintText: 'email',
-                contentPadding:
-                EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(32.0)),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide:
-                  BorderSide(color: Colors.lightBlueAccent, width: 1.0),
-                  borderRadius: BorderRadius.all(Radius.circular(32.0)),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide:
-                  BorderSide(color: Colors.lightBlueAccent, width: 2.0),
-                  borderRadius: BorderRadius.all(Radius.circular(32.0)),
-                ),
+            Container(
+              padding: const EdgeInsets.fromLTRB(20, 10, 10, 10),
+              child: Text(
+                myDeveloper.email,
+                 style: TextStyle(
+                   color: Colors.black38,
+                 )
               ),
+              decoration: myBoxDecoration(),
             ),
             SizedBox(
               height: 8.0,
             ),
             TextField(
-              //controller: TextEditingController()..text = '',
+              controller: TextEditingController()..text = myDeveloper.password,
               onChanged: (value) {
-                password = value;
+                myDeveloper.password = value;
               },
               decoration: InputDecoration(
                 hintText: 'password',
@@ -133,9 +104,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 Expanded(
                   flex: 20,
                   child: TextField(
-                    //controller: TextEditingController()..text = 'flutter@anywhere.com',
+                    controller: TextEditingController()..text = myDeveloper.firstName,
                     onChanged: (value) {
-                      firstName = value;
+                      myDeveloper.firstName = value;
                     },
                     decoration: InputDecoration(
                       hintText: 'first name',
@@ -166,9 +137,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 Expanded(
                   flex: 20,
                   child: TextField(
-                    //controller: TextEditingController()..text = 'flutter@anywhere.com',
+                    controller: TextEditingController()..text = myDeveloper.lastName,
                     onChanged: (value) {
-                      lastName = value;
+                      myDeveloper.lastName = value;
                     },
                     decoration: InputDecoration(
                       hintText: 'last name',
@@ -196,10 +167,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               height: 24.0,
             ),
             TextField(
-              maxLines: 4,
-              //controller: TextEditingController()..text = '',
+              maxLines: 2,
+              controller: TextEditingController()..text = myDeveloper.bio,
               onChanged: (value) {
-                bio = value;
+                myDeveloper.bio = value;
               },
               decoration: InputDecoration(
                 hintText: 'Tell us about yourself',
@@ -231,7 +202,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 elevation: 5.0,
                 child: MaterialButton(
                   onPressed: () {
-                    validateEntries();
+                    validateEntries(context);
                   },
                   minWidth: 200.0,
                   height: 42.0,
@@ -251,6 +222,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         ),
       ),
     );
-
   }
+}
+
+BoxDecoration myBoxDecoration() {
+  return BoxDecoration(
+    border: Border.all(
+      width: 1.0,
+      color: Colors.lightBlueAccent,
+    ),
+    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+  );
 }

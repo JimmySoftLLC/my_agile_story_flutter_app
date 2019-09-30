@@ -1,45 +1,50 @@
 import 'package:flutter/material.dart';
+import 'package:my_agile_story_flutter_app/controller/developer.dart';
 import 'package:my_agile_story_flutter_app/view/home_page.dart';
 import 'package:my_agile_story_flutter_app/view/logged_in_page.dart';
 import 'package:my_agile_story_flutter_app/view/video_page.dart';
 import 'package:my_agile_story_flutter_app/view/login_in.dart';
 import 'package:my_agile_story_flutter_app/view/register_new_developer.dart';
 import 'package:my_agile_story_flutter_app/controller/api_requests.dart';
+import 'package:my_agile_story_flutter_app/controller/project.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class LoginScreen extends StatefulWidget {
-  static const String id ='/LoginScreen';
+class NewProject extends StatefulWidget {
+  static const String id ='/NewProject';
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _NewProjectState createState() => _NewProjectState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _NewProjectState extends State<NewProject> {
   String myText = '';
-  String email = 'flutter@anywhere.com';
-  String password = '1234';
+  String name = '';
+  String description = '';
 
-  void validateEntries(context) {
-    //print (email.toString());
-    //print (password.toString());
-    if (email == '' || password == '' ) {
+  void validateEntries() {
+    print (name.toString());
+    print (description.toString());
+    if (name == '' ) {
       setState(() {
-        myText = 'No entries please enter email and password.';
+        myText = 'Project must have a name.';
       });
     }else{
       setState(() {
-        myText = 'Logging on to server please wait.';
+        myText = 'Creating project user please wait.';
       });
-      loginDeveloper(email,password,context);
+
+      Project myProject = new Project(
+          'NoID',
+          name,
+          description,);
+          createNewProject(myDeveloper,myProject,context);
     }
   }
-
-  var txt = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Login New User',style: TextStyle(fontSize: 17,)),
+        title: Text('Create New Project',style: TextStyle(fontSize: 17,)),
         backgroundColor: Colors.blue,
         actions: <Widget>[
           // overflow menu
@@ -50,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            IconButton(icon: Icon(FontAwesomeIcons.angleLeft), onPressed: () {Navigator.pushReplacementNamed(context, MyHomePage.id);},),
+            IconButton(icon: Icon(FontAwesomeIcons.angleLeft), onPressed: () {Navigator.pushReplacementNamed(context, MyLoggedInPage.id);},),
           ],
         ),
       ),
@@ -62,12 +67,12 @@ class _LoginScreenState extends State<LoginScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             TextField(
-              //controller: TextEditingController()..text = 'flutter@anywhere.com',
+              //controller: TextEditingController()..text = '',
               onChanged: (value) {
-                email = value;
+                name = value;
               },
               decoration: InputDecoration(
-                hintText: 'Enter your email',
+                hintText: 'Project name',
                 contentPadding:
                 EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
                 border: OutlineInputBorder(
@@ -85,16 +90,17 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
-            SizedBox(
-              height: 8.0,
+                        SizedBox(
+              height: 24.0,
             ),
             TextField(
+              maxLines: 4,
               //controller: TextEditingController()..text = '',
               onChanged: (value) {
-                password=value;
+                description = value;
               },
               decoration: InputDecoration(
-                hintText: 'Enter your password.',
+                hintText: 'Describe the project',
                 contentPadding:
                 EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
                 border: OutlineInputBorder(
@@ -123,12 +129,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 elevation: 5.0,
                 child: MaterialButton(
                   onPressed: () {
-                      validateEntries(context);
+                    validateEntries();
                   },
                   minWidth: 200.0,
                   height: 42.0,
                   child: Text(
-                    'Log In',
+                    'Create',
                   ),
                 ),
               ),

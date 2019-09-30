@@ -8,6 +8,7 @@ import 'debug_printing.dart';
 import 'dom_equivalents.dart';
 import 'test_api.dart';
 import 'package:flutter/material.dart';
+import 'package:my_agile_story_flutter_app/view/logged_in_page.dart';
 import 'package:my_agile_story_flutter_app/view/home_page.dart';
 
 const String URL_Address = 'https://shrouded-basin-24147.herokuapp.com';
@@ -161,7 +162,7 @@ void createNewProject(thisDeveloper,thisProject,context) async {
     var myTempDeveloper = json.decode(response.body);
     myProject = new Project.fromJson(myTempDeveloper);
     //printProject(myProject,response);
-    thisDeveloper.projectIds.push(myProject._id);
+    thisDeveloper.projectIds.add(myProject.id);
     getProjects(myDeveloper,-1,context);
     //updateStatus('Project ' +  myProject.name + ', created successfully');
   } else {
@@ -269,7 +270,7 @@ void editProject(thisDeveloper,thisProject,myProjectIndex,context) async {
   }
 }
 
-void editDeveloper(thisDeveloper) async {
+void editDeveloper(thisDeveloper, context) async {
   //TODO  updateEditDeveloperMessage("Editing developer please wait");
   var url = URL_Address + '/put/developer';
   var body = json.encode({
@@ -291,6 +292,7 @@ void editDeveloper(thisDeveloper) async {
     var myTempDeveloper = json.decode(response.body);
     myDeveloper = new Developer.fromJson(myTempDeveloper);
     printDeveloper(myDeveloper,response);
+    Navigator.pushReplacementNamed(context, MyLoggedInPage.id);
     //TODO  updateStatus("Project " + myProject.name + ", edited successfully");
   } else {
     printError(response);

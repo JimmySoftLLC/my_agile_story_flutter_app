@@ -116,41 +116,8 @@ class _MyVideoPageState extends State<MyVideoPage> {
   void playYoutubeVideo(myUrl) {
     youtube.playYoutubeVideoByUrl(
       apiKey: "<API_KEY>",
-      videoUrl: "https://youtu.be/PHabA6CTFXA",
+      videoUrl: myUrl,
     );
-  }
-
-  void playYoutubeVideoEdit() {
-    youtube.onVideoEnded.listen((onData) {
-      //perform your action when video playing is done
-    });
-
-    youtube.playYoutubeVideoByUrl(
-      apiKey: "<API_KEY>",
-      videoUrl: textEditingControllerUrl.text,
-    );
-  }
-
-  void playYoutubeVideoIdEdit() {
-    youtube.onVideoEnded.listen((onData) {
-      //perform your action when video playing is done
-    });
-
-    youtube.playYoutubeVideoById(
-      apiKey: "<API_KEY>",
-      videoId: textEditingControllerId.text,
-    );
-  }
-
-  void playYoutubeVideoIdEditAuto() {
-    youtube.onVideoEnded.listen((onData) {
-      //perform your action when video playing is done
-    });
-
-    youtube.playYoutubeVideoById(
-        apiKey: "<API_KEY>",
-        videoId: textEditingControllerId.text,
-        autoPlay: true);
   }
 
   @override
@@ -264,62 +231,3 @@ class _MyVideoPageState extends State<MyVideoPage> {
     );
   }
 }
-
-
-//@override
-//Widget build(BuildContext context) {
-//  return new MaterialApp(
-//    home: new Scaffold(
-//      appBar: new AppBar(
-//        title: new Text('Youtube Player'),
-//      ),
-//      body: new SingleChildScrollView(
-//        child: new Column(
-//          children: <Widget>[
-//            new Padding(
-//              padding: const EdgeInsets.all(10.0),
-//              child: new TextField(
-//                controller: textEditingControllerUrl,
-//                decoration:
-//                new InputDecoration(labelText: "Enter Youtube URL"),
-//              ),
-//            ),
-//            new Padding(
-//              padding: const EdgeInsets.all(10.0),
-//              child: new RaisedButton(
-//                  child: new Text("Play Video By Url"),
-//                  onPressed: playYoutubeVideoEdit),
-//            ),
-//            new Padding(
-//              padding: const EdgeInsets.all(10.0),
-//              child: new RaisedButton(
-//                  child: new Text("Play Default Video"),
-//                  onPressed: playYoutubeVideo),
-//            ),
-//            new Padding(
-//              padding: const EdgeInsets.all(10.0),
-//              child: new TextField(
-//                controller: textEditingControllerId,
-//                decoration: new InputDecoration(
-//                    labelText: "Youtube Video Id (fhWaJi1Hsfo)"),
-//              ),
-//            ),
-//            new Padding(
-//              padding: const EdgeInsets.all(10.0),
-//              child: new RaisedButton(
-//                  child: new Text("Play Video By Id"),
-//                  onPressed: playYoutubeVideoIdEdit),
-//            ),
-//            new Padding(
-//              padding: const EdgeInsets.all(10.0),
-//              child: new RaisedButton(
-//                  child: new Text("Auto Play Video By Id"),
-//                  onPressed: playYoutubeVideoIdEditAuto),
-//            ),
-//          ],
-//        ),
-//      ),
-//    ),
-//  );
-//}
-//}

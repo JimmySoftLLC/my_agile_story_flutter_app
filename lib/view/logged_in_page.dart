@@ -3,9 +3,11 @@ import 'package:my_agile_story_flutter_app/controller/api_requests.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:my_agile_story_flutter_app/view/home_page.dart';
 import 'package:my_agile_story_flutter_app/view/logged_in_page.dart';
+import 'package:my_agile_story_flutter_app/view/new_project.dart';
 import 'package:my_agile_story_flutter_app/view/video_page.dart';
 import 'package:my_agile_story_flutter_app/view/login_in.dart';
 import 'package:my_agile_story_flutter_app/view/register_new_developer.dart';
+import 'package:my_agile_story_flutter_app/view/edit_user.dart';
 
 class Choice {
   const Choice({this.title,});
@@ -28,7 +30,7 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
 
   @override
   void initState() {
-    print ('init home screen');
+    //print ('init logged in screen');
     super.initState();
   }
 
@@ -43,8 +45,7 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
 
   @override
   Widget build(BuildContext context) {
-    print ('home screen built');
-    //loginDeveloper('flutter@anywhere.com','1234');
+    //print ('logged in screen built');
     return Scaffold(
       appBar: AppBar(
         title: Text('My Agile Story',style: TextStyle(fontSize: 17,)),
@@ -75,11 +76,11 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
                 }).toList();
               },
             ),
-            IconButton(icon: Icon(FontAwesomeIcons.projectDiagram), onPressed: () {},),
+            IconButton(icon: Icon(FontAwesomeIcons.projectDiagram), onPressed: () {Navigator.pushReplacementNamed(context, NewProject.id);},),
             IconButton(icon: Icon(FontAwesomeIcons.trash), onPressed: () {},),
             IconButton(icon: Icon(FontAwesomeIcons.edit), onPressed: () {},),
             IconButton(icon: Icon(FontAwesomeIcons.newspaper), onPressed: () {},),
-            IconButton(icon: Icon(FontAwesomeIcons.userEdit), onPressed: () {},),
+            IconButton(icon: Icon(FontAwesomeIcons.userEdit), onPressed: () {Navigator.pushReplacementNamed(context, EditUser.id);},),
             IconButton(icon: Icon(FontAwesomeIcons.signOutAlt), onPressed: () {Navigator.pushReplacementNamed(context, MyHomePage.id);},),
 
           ],
@@ -94,13 +95,7 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
 
   @override
   void deactivate() {
-    print ('home screen deactivated');
+    //print ('logged in  deactivated');
     super.deactivate();
   }
 }
-
-
-
-//              onPressed: () {
-//                Navigator.pushNamed(context, '/first');
-//              },

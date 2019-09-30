@@ -17,13 +17,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    print ('init home screen');
+    //print ('init home screen');
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    print ('home screen built');
+    //print ('home screen built');
     //loginDeveloper('flutter@anywhere.com','1234');
     return Scaffold(
         appBar: AppBar(
@@ -54,7 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void deactivate() {
-    print ('home screen deactivated');
+    //print ('home screen deactivated');
     super.deactivate();
   }
 }

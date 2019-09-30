@@ -69,7 +69,7 @@ void testUpdateProject(thisDeveloper,myProjectIndex,context){
 
 //testUpdateDeveloper(myDeveloper);
 
-void testUpdateDeveloper(){
+void testUpdateDeveloper(context){
   Developer myUpdatedDeveloper = new Developer(
       'id',
       'flutter@anywhere.com',
@@ -78,7 +78,7 @@ void testUpdateDeveloper(){
       'Developer edited',
       'a developer with many skills edited',
       'admin edited');
-  editDeveloper(myUpdatedDeveloper);
+  editDeveloper(myUpdatedDeveloper,context);
 }
 
 void testDeleteUserStory(myUserStoryIndex){
