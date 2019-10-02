@@ -6,7 +6,6 @@ import 'user_story.dart';
 import 'error.dart';
 import 'debug_printing.dart';
 import 'dom_equivalents.dart';
-import 'test_api.dart';
 import 'package:flutter/material.dart';
 import 'package:my_agile_story_flutter_app/view/logged_in_page.dart';
 import 'package:my_agile_story_flutter_app/view/home_page.dart';
@@ -35,6 +34,8 @@ void loginDeveloper(email,password,context) async {
     //testUpdateProject(myDeveloper,-1);
 
     //testUpdateDeveloper();
+    myLastSelectedProject = -1;
+    myUserStorys=[];
 
     getProjects(myDeveloper,-1,context);
 
@@ -76,7 +77,7 @@ void getProjects(thisDeveloper,myProjectIndex,context) async {
   }
 }
 
-void getUserStorys(thisProject) async {
+void getUserStorys(thisProject, context) async {
   var url = URL_Address + '/get/userStorys';
   var body = json.encode({
     'userStoryIds': thisProject.userStoryIds,
@@ -98,9 +99,10 @@ void getUserStorys(thisProject) async {
 
     myUserStorys.sort((obj1, obj2) {return obj1.priority - obj2.priority;});
 
+    Navigator.pushReplacementNamed(context, MyLoggedInPage.id);
+
     //testDeleteUserStory(0);
     //testDeleteProject(0);
-
     //printUserStorys(myUserStorys, response);
     //TODO    setMyAglileStoryUserStoryStorage();
     //TODO    displayUserStories();
@@ -172,7 +174,7 @@ void createNewProject(thisDeveloper,thisProject,context) async {
   }
 }
 
-void createNewUserStory(thisProject,thisUserStory) async {
+void createNewUserStory(thisProject,thisUserStory,context) async {
   //TODO  updateDeveloperMessage("Creating new user story please wait");
   var url = URL_Address + '/project/userStory';
   var body = json.encode({
@@ -199,8 +201,8 @@ void createNewUserStory(thisProject,thisUserStory) async {
     var myTempUserStory = json.decode(response.body);
     myUserStory = new UserStory.fromJson(myTempUserStory);
     //printUserStory(myUserStory,response);
-    thisProject.userStoryIds.push(myUserStory.id);
-    getUserStorys(thisProject);
+    thisProject.userStoryIds.add(myUserStory.id);
+    getUserStorys(thisProject,context);
   } else {
     printError(response);
     myApiError = new ApiError.fromJson(json.decode(response.body));
@@ -208,7 +210,7 @@ void createNewUserStory(thisProject,thisUserStory) async {
   }
 }
 
-void editUserStory(thisProject,thisUserStory) async {
+void editUserStory(thisProject,thisUserStory,context) async {
   //TODO  updateDeveloperMessage("Updateing user story please wait");
   var url = URL_Address + '/put/userStory';
   var body = json.encode({
@@ -235,7 +237,7 @@ void editUserStory(thisProject,thisUserStory) async {
     var myTempUserStory = json.decode(response.body);
     myUserStory = new UserStory.fromJson(myTempUserStory);
     //printUserStory(myUserStory,response);
-    getUserStorys(thisProject);
+    getUserStorys(thisProject,context);
   } else {
     printError(response);
     myApiError = new ApiError.fromJson(json.decode(response.body));
@@ -301,7 +303,7 @@ void editDeveloper(thisDeveloper, context) async {
   }
 }
 
-void deleteUserStory(myUserStoryIndex) async {
+void deleteUserStory(myUserStoryIndex, context) async {
   if (myUserStoryIndex != -1 && myUserStorys.length > 0) {
     //TODO  updateStatus("Deleting user story please wait");
     var userStoryId = myUserStorys[myUserStoryIndex].id;
@@ -329,7 +331,7 @@ void deleteUserStory(myUserStoryIndex) async {
     if (response.statusCode == 200) {
       print('user story deleted');
       //TODO    updateStatus("User story deleted");
-      getUserStorys(myProjects[myProjectIndex]);
+      getUserStorys(myProjects[myProjectIndex],context);
     } else {
       printError(response);
       myApiError = new ApiError.fromJson(json.decode(response.body));

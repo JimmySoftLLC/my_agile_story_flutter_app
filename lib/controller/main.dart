@@ -6,6 +6,9 @@ import 'package:my_agile_story_flutter_app/view/login_in.dart';
 import 'package:my_agile_story_flutter_app/view/register_new_developer.dart';
 import 'package:my_agile_story_flutter_app/view/edit_user.dart';
 import 'package:my_agile_story_flutter_app/view/new_project.dart';
+import 'package:my_agile_story_flutter_app/view/edit_project.dart';
+import 'package:my_agile_story_flutter_app/view/new_user_story.dart';
+import 'package:my_agile_story_flutter_app/view/edit_user_story.dart';
 
 void main() => runApp(MyApp());
 
@@ -22,6 +25,9 @@ class MyApp extends StatelessWidget {
           RegistrationScreen.id : (context) => RegistrationScreen(),
           EditUser.id : (context) => EditUser(),
           NewProject.id : (context) => NewProject(),
+          EditProject.id : (context) => EditProject(),
+          NewUserStory.id : (context) => NewUserStory(),
+          EditUserStory.id : (context) => EditUserStory(),
         }
     );
   }

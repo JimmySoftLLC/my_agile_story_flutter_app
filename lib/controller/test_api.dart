@@ -23,7 +23,7 @@ void testNewProject(thisDeveloper,context){
   createNewProject(thisDeveloper, myNewProject,context);
 }
 
-void testNewUserStory(thisProject){
+void testNewUserStory(thisProject, context){
   UserStory myNewUserStory = new UserStory(
       'NoID',
       'User story new',
@@ -38,10 +38,10 @@ void testNewUserStory(thisProject){
       1,
       1,
       "NoProjectID");
-  createNewUserStory(thisProject, myNewUserStory);
+  createNewUserStory(thisProject, myNewUserStory, context);
 }
 
-void testUpdateUserStory(thisProject){
+void testUpdateUserStory(thisProject,context){
   UserStory myUpDatedUserStory = new UserStory(
       'id',
       'User story updated 2',
@@ -56,7 +56,7 @@ void testUpdateUserStory(thisProject){
       12,
       12,
       "NoProjectID");
-  editUserStory(thisProject, myUpDatedUserStory);
+  editUserStory(thisProject, myUpDatedUserStory,context);
 }
 
 void testUpdateProject(thisDeveloper,myProjectIndex,context){
@@ -81,8 +81,8 @@ void testUpdateDeveloper(context){
   editDeveloper(myUpdatedDeveloper,context);
 }
 
-void testDeleteUserStory(myUserStoryIndex){
-  deleteUserStory(myUserStoryIndex);
+void testDeleteUserStory(myUserStoryIndex,context){
+  deleteUserStory(myUserStoryIndex,context);
 }
 
 void testDeleteProject(myProjectIndex,context){

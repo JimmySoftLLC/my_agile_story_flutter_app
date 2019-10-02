@@ -5,42 +5,27 @@ import 'package:my_agile_story_flutter_app/controller/api_requests.dart';
 import 'package:my_agile_story_flutter_app/controller/project.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class NewProject extends StatefulWidget {
-  static const String id ='/NewProject';
+class EditProject extends StatefulWidget {
+  static const String id ='/EditProject';
   @override
-  _NewProjectState createState() => _NewProjectState();
+  _EditProjectState createState() => _EditProjectState();
 }
 
-class _NewProjectState extends State<NewProject> {
-  String myText = '';
-  String name = '';
-  String description = '';
+class _EditProjectState extends State<EditProject> {
+  String myMessageText = '';
 
   void validateEntries() {
-    print (name.toString());
-    print (description.toString());
-    if (name == '' ) {
       setState(() {
-        myText = 'Project must have a name.';
+        myMessageText = 'Saving project user please wait.';
       });
-    }else{
-      setState(() {
-        myText = 'Creating project user please wait.';
-      });
-
-      Project myProject = new Project(
-          'NoID',
-          name,
-          description,);
-          createNewProject(myDeveloper,myProject,context);
-    }
+      editProject(myDeveloper,myProjects[myLastSelectedProject],myLastSelectedProject,context);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create New Project',style: TextStyle(fontSize: 17,)),
+        title: Text('Edit Project',style: TextStyle(fontSize: 17,)),
         backgroundColor: Colors.blue,
         actions: <Widget>[
           // overflow menu
@@ -70,9 +55,9 @@ class _NewProjectState extends State<NewProject> {
                 height: 24.0,
               ),
               TextField(
-                //controller: TextEditingController()..text = '',
+                controller: TextEditingController()..text = myProjects[myLastSelectedProject].name,
                 onChanged: (value) {
-                  name = value;
+                  myProjects[myLastSelectedProject].name = value;
                 },
                 decoration: InputDecoration(
                   hintText: 'Project name',
@@ -98,9 +83,9 @@ class _NewProjectState extends State<NewProject> {
               ),
               TextField(
                 maxLines: 4,
-                //controller: TextEditingController()..text = '',
+                controller: TextEditingController()..text = myProjects[myLastSelectedProject].description,
                 onChanged: (value) {
-                  description = value;
+                  myProjects[myLastSelectedProject].description = value;
                 },
                 decoration: InputDecoration(
                   hintText: 'Describe the project',
@@ -137,7 +122,7 @@ class _NewProjectState extends State<NewProject> {
                     minWidth: 200.0,
                     height: 42.0,
                     child: Text(
-                      'Create',
+                      'Save changes',
                     ),
                   ),
                 ),
@@ -146,7 +131,7 @@ class _NewProjectState extends State<NewProject> {
                 height: 8.0,
               ),
               Text(
-                myText,
+                myMessageText,
               ),
               SizedBox(
                 height: 24.0,
