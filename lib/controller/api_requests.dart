@@ -5,7 +5,6 @@ import 'project.dart';
 import 'user_story.dart';
 import 'error.dart';
 import 'debug_printing.dart';
-import 'dom_equivalents.dart';
 import 'package:flutter/material.dart';
 import 'package:my_agile_story_flutter_app/view/logged_in_page.dart';
 import 'package:my_agile_story_flutter_app/view/home_page.dart';
@@ -68,8 +67,7 @@ void getProjects(thisDeveloper,myProjectIndex,context) async {
     //getUserStorys(myProjects[0]);
 
     //testUpdateUserStory(myProjects[0]);
-
-    loggedinMenu(myProjectIndex,context);
+      Navigator.pushNamedAndRemoveUntil(context, MyLoggedInPage.id,(Route<dynamic> route) => false);
   } else {
     //    printError(response);
     myApiError = new ApiError.fromJson(json.decode(response.body));
@@ -99,7 +97,7 @@ void getUserStorys(thisProject, context) async {
 
     myUserStorys.sort((obj1, obj2) {return obj1.priority - obj2.priority;});
 
-    Navigator.pushReplacementNamed(context, MyLoggedInPage.id);
+    Navigator.pushNamedAndRemoveUntil(context, MyLoggedInPage.id,(Route<dynamic> route) => false);
 
     //testDeleteUserStory(0);
     //testDeleteProject(0);
@@ -304,6 +302,7 @@ void editDeveloper(thisDeveloper, context) async {
 }
 
 void deleteUserStory(myUserStoryIndex, context) async {
+  print('got to user story delete api');
   if (myUserStoryIndex != -1 && myUserStorys.length > 0) {
     //TODO  updateStatus("Deleting user story please wait");
     var userStoryId = myUserStorys[myUserStoryIndex].id;

@@ -45,7 +45,9 @@ class _EditUserStoryState extends State<EditUserStory> {
           children: <Widget>[
             IconButton(
               tooltip: 'Go back',
-              icon: Icon(FontAwesomeIcons.angleLeft), onPressed: () {Navigator.pushReplacementNamed(context, MyLoggedInPage.id);},
+              icon: Icon(FontAwesomeIcons.angleLeft), onPressed: () {
+              Navigator.pushNamedAndRemoveUntil(context, MyLoggedInPage.id,(Route<dynamic> route) => false);
+                },
             ),
           ],
         ),
@@ -484,7 +486,7 @@ class _EditUserStoryState extends State<EditUserStory> {
                     minWidth: 200.0,
                     height: 42.0,
                     child: Text(
-                      'Create',
+                      'Save changes',
                     ),
                   ),
                 ),

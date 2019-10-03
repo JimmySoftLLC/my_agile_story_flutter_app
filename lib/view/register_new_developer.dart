@@ -60,7 +60,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           children: <Widget>[
             IconButton(
               tooltip: 'Go back',
-              icon: Icon(FontAwesomeIcons.angleLeft), onPressed: () {Navigator.pushReplacementNamed(context, MyHomePage.id);},
+              icon: Icon(FontAwesomeIcons.angleLeft), onPressed: () {
+                Navigator.pushNamedAndRemoveUntil(context, MyHomePage.id,(Route<dynamic> route) => false);
+                },
             ),
           ],
         ),

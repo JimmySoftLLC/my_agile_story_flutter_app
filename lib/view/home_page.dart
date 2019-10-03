@@ -37,15 +37,21 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             IconButton(
               tooltip: 'Videos',
-              icon: Icon(FontAwesomeIcons.video), onPressed: () {Navigator.pushReplacementNamed(context, MyVideoPage.id);},
+              icon: Icon(FontAwesomeIcons.video), onPressed: () {
+                Navigator.pushNamedAndRemoveUntil(context, MyVideoPage.id,(Route<dynamic> route) => false);
+                },
             ),
             IconButton(
               tooltip: 'Register new user',
-              icon: Icon(FontAwesomeIcons.userPlus), onPressed: () {Navigator.pushReplacementNamed(context, RegistrationScreen.id);},
+              icon: Icon(FontAwesomeIcons.userPlus), onPressed: () {
+                Navigator.pushNamedAndRemoveUntil(context, RegistrationScreen.id,(Route<dynamic> route) => false);
+                },
             ),
             IconButton(
               tooltip: 'Login',
-              icon: Icon(FontAwesomeIcons.signInAlt), onPressed: () {Navigator.pushReplacementNamed(context, LoginScreen.id);},
+              icon: Icon(FontAwesomeIcons.signInAlt), onPressed: () {
+                Navigator.pushNamedAndRemoveUntil(context, LoginScreen.id,(Route<dynamic> route) => false);
+                },
             ),
           ],
         ),

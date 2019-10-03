@@ -35,10 +35,12 @@ List<ProjectPopupMenu> choices = <ProjectPopupMenu>[
 
 List<UserStoryCard> updateUserStoryCards (number){
   List<Widget> userStoryCards = <UserStoryCard>[];
+  String userStoryBody;
   for (int i = 0; i< myUserStorys.length; i++) {
     if (myLastSelectedPhase == myUserStorys[i].phase) {
+      userStoryBody ='As a ' + myUserStorys[i].userRole + ', I want ' + myUserStorys[i].userWant + ' so that ' + myUserStorys[i].userBenefit;
       print(i.toString());
-      userStoryCards.add(new UserStoryCard(label: myUserStorys[i].userStoryTitle, index: i,));
+      userStoryCards.add(new UserStoryCard(userStoryTitle: myUserStorys[i].userStoryTitle,userStoryBody: userStoryBody, index: i,));
     }
   }
   return userStoryCards;
@@ -46,6 +48,7 @@ List<UserStoryCard> updateUserStoryCards (number){
 
 class MyLoggedInPage extends StatefulWidget {
   static const String id ='/MyLoggedInPage';
+  static _MyLoggedInPageState of(BuildContext context) => context.ancestorStateOfType(const TypeMatcher<_MyLoggedInPageState>());
   @override
   _MyLoggedInPageState createState() => _MyLoggedInPageState();
 }
@@ -70,6 +73,10 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
     super.initState();
   }
 
+  printAccessedFromOutside(){
+    print('Dude you got in!');
+  }
+
   void _select(ProjectPopupMenu choice) {
     setState(() {
       _selectedChoices = choice;
@@ -77,6 +84,100 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
       print('you selected' + choice.id.toString());
       getUserStorys(myProjects[choice.id],context);
     });
+  }
+
+  RichText myRichText(String itemType ,String itemName){
+    var text = new RichText(
+      text: new TextSpan(
+        // Note: Styles for TextSpans must be explicitly defined.
+        // Child text spans will inherit styles from parent
+        style: new TextStyle(
+          fontSize: 14.0,
+          color: Colors.black,
+        ),
+        children: <TextSpan>[
+          new TextSpan(text: 'You are about to delete '+ itemType +', ',style: new TextStyle(fontSize: 17)),
+          new TextSpan(text: itemName, style: new TextStyle(fontWeight: FontWeight.bold,fontSize: 17)),
+          new TextSpan(text: '.  This process is irreversable are you sure?',style: new TextStyle(fontSize: 17)),
+        ],
+      ),
+    );
+    return text;
+  }
+
+  void _deleteWarningPopup(String itemType ,String itemName) {
+    // flutter defined function
+    showDialog(
+      context: context,
+      barrierDismissible: false, // user must tap button for close dialog!,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: Text('Delete Warning !',
+              style:  TextStyle(color: Colors.red)),
+          content: myRichText(itemType, itemName),
+          actions: <Widget>[
+            FlatButton(
+              child: const Text('CANCEL'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            FlatButton(
+              child: const Text('DELETE'),
+              onPressed: () {
+                switch(itemType) {
+                  case 'user story': {
+                    print('user story delete');
+                    deleteUserStory(myLastSelectedUserStory, context);
+                  }
+                  break;
+                  case 'project': {
+                    print('project delete');
+                    deleteProject(myLastSelectedProject, context);
+                    myLastSelectedProject = -1;
+                  }
+                  break;
+                  default: {
+                  }
+                  break;
+                }
+              },
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  void _messagePopup(String message) {
+    // flutter defined function
+    showDialog(
+      context: context,
+      barrierDismissible: false, // user must tap button for close dialog!,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: Text(
+            'Note',
+
+              ),
+          content: Text(message),
+          actions: <Widget>[
+            FlatButton(
+              child: const Text('OK',
+                style:  TextStyle(
+                  fontSize: 17,
+                ),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -90,7 +191,7 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
           IconButton(
             tooltip: 'Burn down chart',
             icon: Icon(FontAwesomeIcons.chartBar), onPressed: () {
-
+              //TODO burndown chart
               },
           ),
           IconButton(
@@ -121,8 +222,6 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
             Navigator.pushReplacementNamed(context, MyLoggedInPage.id);
           },
           ),
-          // overflow menu
-
         ],
       ),
       bottomNavigationBar: BottomAppBar(
@@ -149,30 +248,51 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
             ),
             IconButton(
               tooltip: 'Projects list',
-              icon: Icon(FontAwesomeIcons.projectDiagram), onPressed: () {Navigator.pushReplacementNamed(context, NewProject.id);},),
+              icon: Icon(FontAwesomeIcons.projectDiagram), onPressed: () {
+                  Navigator.pushNamedAndRemoveUntil(context, NewProject.id,(Route<dynamic> route) => false);
+                },),
             IconButton(
               tooltip: 'Delete project',
-              icon: Icon(FontAwesomeIcons.trash), onPressed: () {},
+              icon: Icon(FontAwesomeIcons.trash), onPressed: () {
+                  if (myLastSelectedProject != -1) {
+                    _deleteWarningPopup('project',myProjects[myLastSelectedProject].name);
+                  }else{
+                    _messagePopup('No project selected to delete.   Select an existing project under the ... menu first.');
+                  }
+                },
             ),
             IconButton(
               tooltip: 'Edit project',
               icon: Icon(FontAwesomeIcons.edit), onPressed: () {
-              {Navigator.pushReplacementNamed(context, EditProject.id);}
+              if (myLastSelectedProject != -1) {
+                Navigator.pushNamedAndRemoveUntil(context, EditProject.id,(Route<dynamic> route) => false);
+              }else{
+                _messagePopup('No project selected to edit.   Select an existing project under the ... menu first.');
+              }
             },
             ),
             IconButton(
               tooltip: 'New user story',
-              icon: Icon(FontAwesomeIcons.newspaper), onPressed: () {Navigator.pushReplacementNamed(context, NewUserStory.id);},
+              icon: Icon(FontAwesomeIcons.newspaper), onPressed: () {
+                  if (myLastSelectedProject != -1) {
+                    Navigator.pushNamedAndRemoveUntil(context, NewUserStory.id,(Route<dynamic> route) => false);
+                  }else{
+                    _messagePopup('No project selected to add a user story to.   Create a new project or select an existing project under the ... menu first.');
+                  }
+                },
             ),
             IconButton(
               tooltip: 'Edit user',
-              icon: Icon(FontAwesomeIcons.userEdit), onPressed: () {Navigator.pushReplacementNamed(context, EditUser.id);},
+              icon: Icon(FontAwesomeIcons.userEdit), onPressed: () {
+                Navigator.pushNamedAndRemoveUntil(context, EditUser.id,(Route<dynamic> route) => false);
+                },
             ),
             IconButton(
               tooltip: 'Sign out',
-              icon: Icon(FontAwesomeIcons.signOutAlt), onPressed: () {Navigator.pushReplacementNamed(context, MyHomePage.id);},
+              icon: Icon(FontAwesomeIcons.signOutAlt), onPressed: () {
+                Navigator.pushNamedAndRemoveUntil(context, MyHomePage.id,(Route<dynamic> route) => false);
+                },
             ),
-
           ],
         ),
       ),
@@ -190,46 +310,82 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
   }
 }
 
-editUserStory2(index,context) {
+editUserStoryPressed(index,context) {
   myLastSelectedUserStory = index;
-  print("edit user story " + myLastSelectedUserStory.toString());
   Navigator.pushReplacementNamed(context, EditUserStory.id);
 }
 
-deleteUserStory(index,context) {
-  print("delete user story " + index.toString());
+deleteUserStoryPressed(index,context) {
+  myLastSelectedUserStory = index;
+  MyLoggedInPage.of(context)._deleteWarningPopup('user story',myUserStorys[index].userStoryTitle);
 }
 
-moveUserStoryToSprint(index,context) {
+moveUserStoryToNextPhasePressed(index,context) {
+  myLastSelectedUserStory = index;
   print("send to sprint " + index.toString());
+  int myCurrentPhase = int.parse(myUserStorys[myLastSelectedUserStory].phase);
+  if ( myCurrentPhase < 3){
+    myCurrentPhase +=1;
+    myUserStorys[myLastSelectedUserStory].phase =myCurrentPhase.toString();
+  }
+  editUserStory(myProjects[myLastSelectedProject], myUserStorys[myLastSelectedUserStory],context);
 }
 
 class UserStoryCard extends StatelessWidget {
-  UserStoryCard({ @required this.label,@required this.index});
-  final String label;
+  UserStoryCard({ @required this.userStoryTitle,@required this.userStoryBody,@required this.index});
+  final String userStoryTitle;
+  final String userStoryBody;
   final int index;
   @override
   Widget build(BuildContext context) {
     return Container(
       child: Row(
         children: <Widget>[
-          Text(
-              '   ' + label),
-          IconButton(
-            tooltip: 'Edit user story',
-            icon: Icon(FontAwesomeIcons.edit), onPressed: () => editUserStory2(index,context),
+          Expanded(
+            flex: 60,
+            child: Container(
+              padding: new EdgeInsets.fromLTRB(10, 10, 10, 10),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                      userStoryTitle,
+                  style: TextStyle(fontWeight: FontWeight.w700)),
+                  SizedBox(
+                    height: 8.0,
+                  ),
+                  Text(
+                      userStoryBody),
+                ],
+              ),
+            ),
           ),
-          IconButton(
-            tooltip: 'Delete user story',
-            icon: Icon(FontAwesomeIcons.trash), onPressed: () => deleteUserStory(index,context),
-          ),
-          IconButton(
-            tooltip: 'Send to sprint',
-            icon: Icon(FontAwesomeIcons.running), onPressed: () => moveUserStoryToSprint(index,context),
+          Expanded(
+            flex: 60,
+            child:  Container(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  IconButton(
+                    tooltip: 'Edit user story',
+                    icon: Icon(FontAwesomeIcons.edit), onPressed: () => editUserStoryPressed(index,context),
+                  ),
+                  IconButton(
+                    tooltip: 'Delete user story',
+                    icon: Icon(FontAwesomeIcons.trash), onPressed: () => deleteUserStoryPressed(index,context),
+                  ),
+                  IconButton(
+                    tooltip: 'Send to sprint',
+                    icon: Icon(FontAwesomeIcons.running), onPressed: () => moveUserStoryToNextPhasePressed(index,context),
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),
-      height: 100,
+      height: 130,
       margin: EdgeInsets.all(5.0),
       decoration: BoxDecoration(
         color: Colors.black12,

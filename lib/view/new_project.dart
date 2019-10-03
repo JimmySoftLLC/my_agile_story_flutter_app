@@ -27,7 +27,7 @@ class _NewProjectState extends State<NewProject> {
       setState(() {
         myText = 'Creating project user please wait.';
       });
-
+      myLastSelectedProject = -1;
       Project myProject = new Project(
           'NoID',
           name,
@@ -53,7 +53,9 @@ class _NewProjectState extends State<NewProject> {
           children: <Widget>[
             IconButton(
               tooltip: 'Go back',
-              icon: Icon(FontAwesomeIcons.angleLeft), onPressed: () {Navigator.pushReplacementNamed(context, MyLoggedInPage.id);},
+              icon: Icon(FontAwesomeIcons.angleLeft), onPressed: () {
+                  Navigator.pushNamedAndRemoveUntil(context, MyLoggedInPage.id,(Route<dynamic> route) => false);
+                },
             ),
           ],
         ),
