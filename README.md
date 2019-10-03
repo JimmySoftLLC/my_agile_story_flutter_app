@@ -14,8 +14,12 @@ This list is here primarly to inform my readers of the timeline of development. 
   1. Create video page linked to youtube (Done 2019-9-28)
   1. Register new user (Done 2019-9-29)
   2. Login user (Done 2019-9-29)
-  3. Logged in page
-  3. Project selection
-  4. Add user stories
-  4. User story display
-  3. Edit user
+  3. Logged in page (Done 2019-9-30)
+  3. Project selection (Done 2019-9-30)
+  4. User story display (Done 2019-9-30)
+  3. Edit user (Done 2019-9-30)
+  4. Add user stories (Done 2019-10-1)
+  3. Edit user stories (Done 2019-10-1)
+  3. Delete user stories 
+  3. Delete projects
+  3. Clean up user story card
