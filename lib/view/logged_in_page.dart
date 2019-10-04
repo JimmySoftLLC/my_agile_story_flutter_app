@@ -153,6 +153,7 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
   Widget build(BuildContext context) {
     //print ('logged in screen built');
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: DefaultTabController(
         length: 5,
         initialIndex: int.parse(myLastSelectedPhase),
@@ -518,7 +519,6 @@ List<charts.Series<GraphData, String>> _createBurnDownDataSet() {
   ];
 }
 
-//**************
 class ProjectPopupMenu {
   final String title;
   final int id;
