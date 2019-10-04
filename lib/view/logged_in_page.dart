@@ -9,6 +9,7 @@ import 'package:my_agile_story_flutter_app/controller/project.dart';
 import 'package:my_agile_story_flutter_app/view/edit_project.dart';
 import 'package:my_agile_story_flutter_app/view/new_user_story.dart';
 import 'package:my_agile_story_flutter_app/view/edit_user_story.dart';
+import 'package:charts_flutter/flutter.dart';
 
 String myLastSelectedPhase = '0';
 int myLastSelectedProject = -1;
@@ -36,11 +37,29 @@ List<ProjectPopupMenu> choices = <ProjectPopupMenu>[
 List<UserStoryCard> updateUserStoryCards (number){
   List<Widget> userStoryCards = <UserStoryCard>[];
   String userStoryBody;
+  IconData myIcon;
   for (int i = 0; i< myUserStorys.length; i++) {
     if (myLastSelectedPhase == myUserStorys[i].phase) {
+        switch(myUserStorys[i].phase) {
+          case '0': {myIcon = FontAwesomeIcons.running;}
+          break;
+
+          case '1': {myIcon = FontAwesomeIcons.check;}
+          break;
+
+          case '2': {myIcon = FontAwesomeIcons.handsHelping;}
+          break;
+
+          case '3': {}
+          break;
+
+          default: {}
+          break;
+        }
+
       userStoryBody ='As a ' + myUserStorys[i].userRole + ', I want ' + myUserStorys[i].userWant + ' so that ' + myUserStorys[i].userBenefit;
       print(i.toString());
-      userStoryCards.add(new UserStoryCard(userStoryTitle: myUserStorys[i].userStoryTitle,userStoryBody: userStoryBody, index: i,));
+      userStoryCards.add(new UserStoryCard(userStoryTitle: myUserStorys[i].userStoryTitle,userStoryBody: userStoryBody, index: i, phase: myIcon));
     }
   }
   return userStoryCards;
@@ -229,22 +248,26 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            PopupMenuButton<ProjectPopupMenu>(
-              elevation: 3.2,
-              initialValue: _selectedChoices,
-              onCanceled: () {
-                print('user canceled popup');
-              },
-              tooltip: 'Projects list',
-              onSelected: _select,
-              itemBuilder: (BuildContext context) {
-                return choices.map((ProjectPopupMenu choice) {
-                  return PopupMenuItem<ProjectPopupMenu>(
-                    value: choice,
-                    child: Text(choice.title),
-                  );
-                }).toList();
-              },
+            SizedBox(
+              width:30,
+              child: PopupMenuButton<ProjectPopupMenu>(
+                icon: Icon(FontAwesomeIcons.ellipsisV),
+                elevation: 3.2,
+                initialValue: _selectedChoices,
+                onCanceled: () {
+                  print('user canceled popup');
+                },
+                tooltip: 'Projects list',
+                onSelected: _select,
+                itemBuilder: (BuildContext context) {
+                  return choices.map((ProjectPopupMenu choice) {
+                    return PopupMenuItem<ProjectPopupMenu>(
+                      value: choice,
+                      child: Text(choice.title),
+                    );
+                  }).toList();
+                },
+              ),
             ),
             IconButton(
               tooltip: 'Projects list',
@@ -332,19 +355,20 @@ moveUserStoryToNextPhasePressed(index,context) {
 }
 
 class UserStoryCard extends StatelessWidget {
-  UserStoryCard({ @required this.userStoryTitle,@required this.userStoryBody,@required this.index});
+  UserStoryCard({ @required this.userStoryTitle,@required this.userStoryBody,@required this.index,@required this.phase});
   final String userStoryTitle;
   final String userStoryBody;
   final int index;
+  final IconData phase;
   @override
   Widget build(BuildContext context) {
     return Container(
       child: Row(
         children: <Widget>[
           Expanded(
-            flex: 60,
+            flex: 50,
             child: Container(
-              padding: new EdgeInsets.fromLTRB(10, 10, 10, 10),
+              padding: new EdgeInsets.fromLTRB(10, 10, 0, 10),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -362,7 +386,7 @@ class UserStoryCard extends StatelessWidget {
             ),
           ),
           Expanded(
-            flex: 60,
+            flex: 50,
             child:  Container(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -377,7 +401,7 @@ class UserStoryCard extends StatelessWidget {
                   ),
                   IconButton(
                     tooltip: 'Send to sprint',
-                    icon: Icon(FontAwesomeIcons.running), onPressed: () => moveUserStoryToNextPhasePressed(index,context),
+                    icon: Icon(phase), onPressed: () => moveUserStoryToNextPhasePressed(index,context),
                   ),
                 ],
               ),
