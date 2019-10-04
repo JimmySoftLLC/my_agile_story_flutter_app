@@ -24,6 +24,7 @@ class _NewUserStoryState extends State<NewUserStory> {
       myText = 'Creating user story user please wait.';
     });
     if (myLastSelectedProject >= 0 && myLastSelectedProject < myProjects.length){
+      myLastSelectedPhase = myNewUserStory.phase;
       createNewUserStory(myProjects[myLastSelectedProject], myNewUserStory, context);
     }
   }

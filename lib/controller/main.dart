@@ -9,7 +9,6 @@ import 'package:my_agile_story_flutter_app/view/new_project.dart';
 import 'package:my_agile_story_flutter_app/view/edit_project.dart';
 import 'package:my_agile_story_flutter_app/view/new_user_story.dart';
 import 'package:my_agile_story_flutter_app/view/edit_user_story.dart';
-import 'package:my_agile_story_flutter_app/view/chart_example.dart';
 
 void main() => runApp(MyApp());
 
@@ -29,7 +28,6 @@ class MyApp extends StatelessWidget {
           EditProject.id : (context) => EditProject(),
           NewUserStory.id : (context) => NewUserStory(),
           EditUserStory.id : (context) => EditUserStory(),
-          //OrdinalComboBarLineChart.id : (context) => OrdinalComboBarLineChart(),
         }
     );
   }

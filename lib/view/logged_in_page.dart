@@ -9,7 +9,7 @@ import 'package:my_agile_story_flutter_app/controller/project.dart';
 import 'package:my_agile_story_flutter_app/view/edit_project.dart';
 import 'package:my_agile_story_flutter_app/view/new_user_story.dart';
 import 'package:my_agile_story_flutter_app/view/edit_user_story.dart';
-import 'package:charts_flutter/flutter.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
 
 String myLastSelectedPhase = '0';
 int myLastSelectedProject = -1;
@@ -34,31 +34,25 @@ void updateProjectChoices (){
 List<ProjectPopupMenu> choices = <ProjectPopupMenu>[
 ];
 
-List<UserStoryCard> updateUserStoryCards (number){
+List<UserStoryCard> updateUserStoryCards (selectedPhase){
   List<Widget> userStoryCards = <UserStoryCard>[];
   String userStoryBody;
   IconData myIcon;
   for (int i = 0; i< myUserStorys.length; i++) {
-    if (myLastSelectedPhase == myUserStorys[i].phase) {
+    if (selectedPhase == myUserStorys[i].phase) {
         switch(myUserStorys[i].phase) {
           case '0': {myIcon = FontAwesomeIcons.running;}
           break;
-
           case '1': {myIcon = FontAwesomeIcons.check;}
           break;
-
           case '2': {myIcon = FontAwesomeIcons.handsHelping;}
           break;
-
           case '3': {}
           break;
-
           default: {}
           break;
         }
-
       userStoryBody ='As a ' + myUserStorys[i].userRole + ', I want ' + myUserStorys[i].userWant + ' so that ' + myUserStorys[i].userBenefit;
-      print(i.toString());
       userStoryCards.add(new UserStoryCard(userStoryTitle: myUserStorys[i].userStoryTitle,userStoryBody: userStoryBody, index: i, phase: myIcon));
     }
   }
@@ -73,27 +67,66 @@ class MyLoggedInPage extends StatefulWidget {
 }
 
 class _MyLoggedInPageState extends State<MyLoggedInPage> {
-  List<Widget> userStoryCards = <UserStoryCard>[];
+  List<charts.Series<Pollution, String>> _seriesData;
+  List<Widget> userStoryCardsToDo = <UserStoryCard>[];
+  List<Widget> userStoryCardsDoing = <UserStoryCard>[];
+  List<Widget> userStoryCardsVerify = <UserStoryCard>[];
+  List<Widget> userStoryCardsDone = <UserStoryCard>[];
+
   ProjectPopupMenu _selectedChoices;
 
-  @override
-  void initState() {
-    //print ('init logged in screen');
-    _selectedChoices = null;
-    updateProjectChoices();
-    if (myLastSelectedProject > myProjects.length - 1) {
-      myLastSelectedProject = myProjects.length - 1;
-    }
-    if (myLastSelectedProject >= 0 ) {
-      print('update user storys');
-      _selectedChoices = choices[myLastSelectedProject];
-      userStoryCards = updateUserStoryCards(myUserStorys.length);
-    }
-    super.initState();
-  }
+  _generateData() {
+    var data1 = [
+      new Pollution(1980, 'USA', 30),
+      new Pollution(1980, 'Asia', 40),
+      new Pollution(1980, 'Europe', 10),
+    ];
+    var data2 = [
+      new Pollution(1985, 'USA', 100),
+      new Pollution(1980, 'Asia', 150),
+      new Pollution(1985, 'Europe', 80),
+    ];
+    var data3 = [
+      new Pollution(1985, 'USA', 200),
+      new Pollution(1980, 'Asia', 300),
+      new Pollution(1985, 'Europe', 180),
+    ];
 
-  printAccessedFromOutside(){
-    print('Dude you got in!');
+    _seriesData.add(
+      charts.Series(
+        domainFn: (Pollution pollution, _) => pollution.place,
+        measureFn: (Pollution pollution, _) => pollution.quantity,
+        id: '2017',
+        data: data1,
+        fillPatternFn: (_, __) => charts.FillPatternType.solid,
+        fillColorFn: (Pollution pollution, _) =>
+            charts.ColorUtil.fromDartColor(Color(0xff990099)),
+      ),
+    );
+
+    _seriesData.add(
+      charts.Series(
+        domainFn: (Pollution pollution, _) => pollution.place,
+        measureFn: (Pollution pollution, _) => pollution.quantity,
+        id: '2018',
+        data: data2,
+        fillPatternFn: (_, __) => charts.FillPatternType.solid,
+        fillColorFn: (Pollution pollution, _) =>
+            charts.ColorUtil.fromDartColor(Color(0xff109618)),
+      ),
+    );
+
+    _seriesData.add(
+      charts.Series(
+        domainFn: (Pollution pollution, _) => pollution.place,
+        measureFn: (Pollution pollution, _) => pollution.quantity,
+        id: '2019',
+        data: data3,
+        fillPatternFn: (_, __) => charts.FillPatternType.solid,
+        fillColorFn: (Pollution pollution, _) =>
+            charts.ColorUtil.fromDartColor(Color(0xffff9900)),
+      ),
+    );
   }
 
   void _select(ProjectPopupMenu choice) {
@@ -105,23 +138,12 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
     });
   }
 
-  RichText myRichText(String itemType ,String itemName){
-    var text = new RichText(
-      text: new TextSpan(
-        // Note: Styles for TextSpans must be explicitly defined.
-        // Child text spans will inherit styles from parent
-        style: new TextStyle(
-          fontSize: 14.0,
-          color: Colors.black,
-        ),
-        children: <TextSpan>[
-          new TextSpan(text: 'You are about to delete '+ itemType +', ',style: new TextStyle(fontSize: 17)),
-          new TextSpan(text: itemName, style: new TextStyle(fontWeight: FontWeight.bold,fontSize: 17)),
-          new TextSpan(text: '.  This process is irreversable are you sure?',style: new TextStyle(fontSize: 17)),
-        ],
-      ),
-    );
-    return text;
+  void _editUserStory() {
+    Navigator.pushReplacementNamed(context, EditUserStory.id);
+  }
+
+  void _moveUserStoryToNextPhase() {
+    editUserStory(myProjects[myLastSelectedProject], myUserStorys[myLastSelectedUserStory],context);
   }
 
   void _deleteWarningPopup(String itemType ,String itemName) {
@@ -179,7 +201,6 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
         return AlertDialog(
           title: Text(
             'Note',
-
               ),
           content: Text(message),
           actions: <Widget>[
@@ -200,129 +221,183 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    //print ('init logged in screen');
+    _selectedChoices = null;
+
+    updateProjectChoices();
+
+    if (myLastSelectedProject > myProjects.length - 1) {
+      myLastSelectedProject = myProjects.length - 1;
+    }
+
+    if (myLastSelectedProject >= 0 ) {
+      print('update user storys');
+      _selectedChoices = choices[myLastSelectedProject];
+      userStoryCardsToDo = updateUserStoryCards('0');
+      userStoryCardsDoing = updateUserStoryCards('1');
+      userStoryCardsVerify = updateUserStoryCards('2');
+      userStoryCardsDone = updateUserStoryCards('3');
+    }
+    _seriesData = List<charts.Series<Pollution, String>>();
+    _generateData();
+
+  }
+
+  @override
   Widget build(BuildContext context) {
     //print ('logged in screen built');
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('My Agile Story',style: TextStyle(fontSize: 17,)),
-        backgroundColor: Colors.blue,
-        actions: <Widget>[
-          IconButton(
-            tooltip: 'Burn down chart',
-            icon: Icon(FontAwesomeIcons.chartBar), onPressed: () {
-              //TODO burndown chart
-              },
-          ),
-          IconButton(
-            tooltip: 'To do',
-            icon: Icon(FontAwesomeIcons.list), onPressed: () {
-            myLastSelectedPhase = '0';
-            Navigator.pushReplacementNamed(context, MyLoggedInPage.id);
-          },
-          ),
-          IconButton(
-            tooltip: 'Sprint',
-            icon: Icon(FontAwesomeIcons.running), onPressed: () {
-            myLastSelectedPhase = '1';
-            Navigator.pushReplacementNamed(context, MyLoggedInPage.id);
-          },
-          ),
-          IconButton(
-            tooltip: 'Verify',
-            icon: Icon(FontAwesomeIcons.check), onPressed: () {
-            myLastSelectedPhase = '2';
-            Navigator.pushReplacementNamed(context, MyLoggedInPage.id);
-          },
-          ),
-          IconButton(
-            tooltip: 'Done',
-            icon: Icon(FontAwesomeIcons.handsHelping), onPressed: () {
-            myLastSelectedPhase = '3';
-            Navigator.pushReplacementNamed(context, MyLoggedInPage.id);
-          },
-          ),
-        ],
-      ),
-      bottomNavigationBar: BottomAppBar(
-        child: new Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            SizedBox(
-              width:30,
-              child: PopupMenuButton<ProjectPopupMenu>(
-                icon: Icon(FontAwesomeIcons.ellipsisV),
-                elevation: 3.2,
-                initialValue: _selectedChoices,
-                onCanceled: () {
-                  print('user canceled popup');
-                },
-                tooltip: 'Projects list',
-                onSelected: _select,
-                itemBuilder: (BuildContext context) {
-                  return choices.map((ProjectPopupMenu choice) {
-                    return PopupMenuItem<ProjectPopupMenu>(
-                      value: choice,
-                      child: Text(choice.title),
-                    );
-                  }).toList();
-                },
+    return MaterialApp(
+      home: DefaultTabController(
+        length:5,
+        initialIndex: int.parse(myLastSelectedPhase),
+        child: Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.blue,
+              bottom: TabBar(
+                indicatorColor: Colors.white,
+                tabs: [
+                  Tab(
+                      icon: Icon(FontAwesomeIcons.list)
+                  ),
+                  Tab(
+                      icon: Icon(FontAwesomeIcons.running)
+                  ),
+                  Tab(
+                      icon: Icon(FontAwesomeIcons.check)
+                  ),
+                  Tab(
+                      icon: Icon(FontAwesomeIcons.handsHelping)
+                  ),
+                  Tab(
+                      icon: Icon(FontAwesomeIcons.chartBar)
+                  ),
+                ],
               ),
+              title: Text('My Agile Story'),
             ),
-            IconButton(
-              tooltip: 'Projects list',
-              icon: Icon(FontAwesomeIcons.projectDiagram), onPressed: () {
+          body:
+            TabBarView(
+              children: [
+                ListView(
+                  padding: const EdgeInsets.all(8),
+                  children: userStoryCardsToDo,
+                ),
+                ListView(
+                  padding: const EdgeInsets.all(8),
+                  children: userStoryCardsDoing,
+                ),
+                ListView(
+                  padding: const EdgeInsets.all(8),
+                  children: userStoryCardsVerify,
+                ),
+                ListView(
+                  padding: const EdgeInsets.all(8),
+                  children: userStoryCardsDone,
+                ),
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Container(
+                    child: Center(
+                      child: Column(
+                        children: <Widget>[
+                          Text(
+                            'SO₂ emissions, by world region (in million tonnes)',style: TextStyle(fontSize: 24.0,fontWeight: FontWeight.bold),),
+                          Expanded(
+                            child: charts.BarChart(
+                              _seriesData,
+                              animate: true,
+                              barGroupingType: charts.BarGroupingType.grouped,
+                              //behaviors: [new charts.SeriesLegend()],
+                              animationDuration: Duration(seconds: 1),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ]
+            ),
+          bottomNavigationBar: BottomAppBar(
+            child: new Row(
+            mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                SizedBox(
+                  width:30,
+                  child: PopupMenuButton<ProjectPopupMenu>(
+                    icon: Icon(FontAwesomeIcons.ellipsisV),
+                    elevation: 3.2,
+                    initialValue: _selectedChoices,
+                    onCanceled: () {
+                      print('user canceled popup');
+                    },
+                    tooltip: 'Projects list',
+                    onSelected: _select,
+                    itemBuilder: (BuildContext context) {
+                      return choices.map((ProjectPopupMenu choice) {
+                        return PopupMenuItem<ProjectPopupMenu>(
+                          value: choice,
+                          child: Text(choice.title),
+                        );
+                      }).toList();
+                    },
+                  ),
+                ),
+                IconButton(
+                  tooltip: 'Projects list',
+                  icon: Icon(FontAwesomeIcons.projectDiagram), onPressed: () {
                   Navigator.pushNamedAndRemoveUntil(context, NewProject.id,(Route<dynamic> route) => false);
                 },),
-            IconButton(
-              tooltip: 'Delete project',
-              icon: Icon(FontAwesomeIcons.trash), onPressed: () {
+                IconButton(
+                  tooltip: 'Delete project',
+                  icon: Icon(FontAwesomeIcons.trash), onPressed: () {
                   if (myLastSelectedProject != -1) {
                     _deleteWarningPopup('project',myProjects[myLastSelectedProject].name);
                   }else{
                     _messagePopup('No project selected to delete.   Select an existing project under the ... menu first.');
                   }
                 },
-            ),
-            IconButton(
-              tooltip: 'Edit project',
-              icon: Icon(FontAwesomeIcons.edit), onPressed: () {
-              if (myLastSelectedProject != -1) {
-                Navigator.pushNamedAndRemoveUntil(context, EditProject.id,(Route<dynamic> route) => false);
-              }else{
-                _messagePopup('No project selected to edit.   Select an existing project under the ... menu first.');
-              }
-            },
-            ),
-            IconButton(
-              tooltip: 'New user story',
-              icon: Icon(FontAwesomeIcons.newspaper), onPressed: () {
+                ),
+                IconButton(
+                  tooltip: 'Edit project',
+                  icon: Icon(FontAwesomeIcons.edit), onPressed: () {
+                  if (myLastSelectedProject != -1) {
+                    Navigator.pushNamedAndRemoveUntil(context, EditProject.id,(Route<dynamic> route) => false);
+                  }else{
+                    _messagePopup('No project selected to edit.   Select an existing project under the ... menu first.');
+                  }
+                },
+                ),
+                IconButton(
+                  tooltip: 'New user story',
+                  icon: Icon(FontAwesomeIcons.newspaper), onPressed: () {
                   if (myLastSelectedProject != -1) {
                     Navigator.pushNamedAndRemoveUntil(context, NewUserStory.id,(Route<dynamic> route) => false);
                   }else{
                     _messagePopup('No project selected to add a user story to.   Create a new project or select an existing project under the ... menu first.');
                   }
                 },
-            ),
-            IconButton(
-              tooltip: 'Edit user',
-              icon: Icon(FontAwesomeIcons.userEdit), onPressed: () {
-                Navigator.pushNamedAndRemoveUntil(context, EditUser.id,(Route<dynamic> route) => false);
+                ),
+                IconButton(
+                  tooltip: 'Edit user',
+                  icon: Icon(FontAwesomeIcons.userEdit), onPressed: () {
+                  Navigator.pushNamedAndRemoveUntil(context, EditUser.id,(Route<dynamic> route) => false);
                 },
-            ),
-            IconButton(
-              tooltip: 'Sign out',
-              icon: Icon(FontAwesomeIcons.signOutAlt), onPressed: () {
-                Navigator.pushNamedAndRemoveUntil(context, MyHomePage.id,(Route<dynamic> route) => false);
+                ),
+                IconButton(
+                  tooltip: 'Sign out',
+                  icon: Icon(FontAwesomeIcons.signOutAlt), onPressed: () {
+                  Navigator.pushNamedAndRemoveUntil(context, MyHomePage.id,(Route<dynamic> route) => false);
                 },
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(8),
-        children: userStoryCards,
-      )
     );
   }
 
@@ -334,24 +409,27 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
 }
 
 editUserStoryPressed(index,context) {
+  myLastSelectedPhase =myUserStorys[index].phase;
   myLastSelectedUserStory = index;
-  Navigator.pushReplacementNamed(context, EditUserStory.id);
+  MyLoggedInPage.of(context)._editUserStory();
 }
 
 deleteUserStoryPressed(index,context) {
   myLastSelectedUserStory = index;
+  myLastSelectedPhase = myUserStorys[index].phase;
   MyLoggedInPage.of(context)._deleteWarningPopup('user story',myUserStorys[index].userStoryTitle);
 }
 
 moveUserStoryToNextPhasePressed(index,context) {
   myLastSelectedUserStory = index;
   print("send to sprint " + index.toString());
+  myLastSelectedPhase =myUserStorys[index].phase;
   int myCurrentPhase = int.parse(myUserStorys[myLastSelectedUserStory].phase);
   if ( myCurrentPhase < 3){
     myCurrentPhase +=1;
     myUserStorys[myLastSelectedUserStory].phase =myCurrentPhase.toString();
   }
-  editUserStory(myProjects[myLastSelectedProject], myUserStorys[myLastSelectedUserStory],context);
+  MyLoggedInPage.of(context)._moveUserStoryToNextPhase();
 }
 
 class UserStoryCard extends StatelessWidget {
@@ -417,4 +495,31 @@ class UserStoryCard extends StatelessWidget {
       ),
     );
   }
+}
+
+RichText myRichText(String itemType ,String itemName){
+  var text = new RichText(
+    text: new TextSpan(
+      // Note: Styles for TextSpans must be explicitly defined.
+      // Child text spans will inherit styles from parent
+      style: new TextStyle(
+        fontSize: 14.0,
+        color: Colors.black,
+      ),
+      children: <TextSpan>[
+        new TextSpan(text: 'You are about to delete '+ itemType +', ',style: new TextStyle(fontSize: 17)),
+        new TextSpan(text: itemName, style: new TextStyle(fontWeight: FontWeight.bold,fontSize: 17)),
+        new TextSpan(text: '.  This process is irreversable are you sure?',style: new TextStyle(fontSize: 17)),
+      ],
+    ),
+  );
+  return text;
+}
+
+class Pollution {
+  String place;
+  int year;
+  int quantity;
+
+  Pollution(this.year, this.place, this.quantity);
 }
