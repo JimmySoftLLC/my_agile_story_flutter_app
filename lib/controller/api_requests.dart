@@ -93,8 +93,6 @@ void getUserStorys(thisProject, context) async {
       myUserStorys.add(new UserStory.fromJson(myTempUserStorys[i])) ;
     }
 
-    //printUserStorys(myUserStorys, response);
-
     myUserStorys.sort((obj1, obj2) {return obj1.priority - obj2.priority;});
 
     Navigator.pushNamedAndRemoveUntil(context, MyLoggedInPage.id,(Route<dynamic> route) => false);
@@ -102,10 +100,6 @@ void getUserStorys(thisProject, context) async {
     //testDeleteUserStory(0);
     //testDeleteProject(0);
     //printUserStorys(myUserStorys, response);
-    //TODO    setMyAglileStoryUserStoryStorage();
-    //TODO    displayUserStories();
-    //TODO    updateStatus("");
-
   } else {
     //printError(response);
     myApiError = new ApiError.fromJson(json.decode(response.body));
