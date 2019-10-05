@@ -4,7 +4,6 @@ import 'developer.dart';
 import 'project.dart';
 import 'user_story.dart';
 import 'error.dart';
-import 'debug_printing.dart';
 import 'package:flutter/material.dart';
 import 'package:my_agile_story_flutter_app/view/logged_in_page.dart';
 import 'package:my_agile_story_flutter_app/view/home_page.dart';
@@ -24,7 +23,7 @@ void loginDeveloper(email,password,context) async {
   http.Response response = await http.post(url, body: body, headers: headers);
   if (response.statusCode == 200) {
     myDeveloper = new Developer.fromJson(json.decode(response.body));
-    printDeveloper(myDeveloper,response);
+    //printDeveloper(myDeveloper,response);
 
     //testNewDeveloper();
 
@@ -61,7 +60,7 @@ void getProjects(thisDeveloper,myProjectIndex,context) async {
     myProjects =[];
     for (int i = 0; i < myTempProjects.length; i++) {
       myProjects.add(new Project.fromJson(myTempProjects[i])) ;
-      printProject (myProjects[i],response);
+      //printProject (myProjects[i],response);
     }
 
     //getUserStorys(myProjects[0]);
@@ -129,8 +128,6 @@ void createNewDeveloper(thisDeveloper,context) async {
     myDeveloper = new Developer.fromJson(myTempDeveloper);
     Navigator.pushReplacementNamed(context, MyHomePage.id);
     //printDeveloper(myDeveloper,response);
-    //TODO  setMyAglileStoryDeveloperStorage();
-    //TODO  updateStatus("Developer created");
   } else {
     //printError(response);
     myApiError = new ApiError.fromJson(json.decode(response.body));
@@ -196,7 +193,7 @@ void createNewUserStory(thisProject,thisUserStory,context) async {
     thisProject.userStoryIds.add(myUserStory.id);
     getUserStorys(thisProject,context);
   } else {
-    printError(response);
+    //printError(response);
     myApiError = new ApiError.fromJson(json.decode(response.body));
     //TODO    showErrorMessage('Error',myApiError.error);
   }
@@ -231,7 +228,7 @@ void editUserStory(thisProject,thisUserStory,context) async {
     //printUserStory(myUserStory,response);
     getUserStorys(thisProject,context);
   } else {
-    printError(response);
+    //printError(response);
     myApiError = new ApiError.fromJson(json.decode(response.body));
     //TODO    showErrorMessage('Error',myApiError.error);
   }
@@ -254,11 +251,11 @@ void editProject(thisDeveloper,thisProject,myProjectIndex,context) async {
   if (response.statusCode == 200) {
     var myTempProject = json.decode(response.body);
     myProject = new Project.fromJson(myTempProject);
-    printProject(myProject,response);
+    //printProject(myProject,response);
     getProjects(thisDeveloper, myProjectIndex,context);
     //TODO  updateStatus("Project " + myProject.name + ", edited successfully");
   } else {
-    printError(response);
+    //printError(response);
     myApiError = new ApiError.fromJson(json.decode(response.body));
     //TODO    showErrorMessage('Error',myApiError.error);
   }
@@ -285,18 +282,17 @@ void editDeveloper(thisDeveloper, context) async {
   if (response.statusCode == 200) {
     var myTempDeveloper = json.decode(response.body);
     myDeveloper = new Developer.fromJson(myTempDeveloper);
-    printDeveloper(myDeveloper,response);
+    //printDeveloper(myDeveloper,response);
     Navigator.pushReplacementNamed(context, MyLoggedInPage.id);
     //TODO  updateStatus("Project " + myProject.name + ", edited successfully");
   } else {
-    printError(response);
+    //printError(response);
     myApiError = new ApiError.fromJson(json.decode(response.body));
     //TODO    showErrorMessage('Error',myApiError.error);
   }
 }
 
 void deleteUserStory(myUserStoryIndex, context) async {
-  print('got to user story delete api');
   if (myUserStoryIndex != -1 && myUserStorys.length > 0) {
     //TODO  updateStatus("Deleting user story please wait");
     var userStoryId = myUserStorys[myUserStoryIndex].id;
@@ -308,8 +304,6 @@ void deleteUserStory(myUserStoryIndex, context) async {
         break;
       }
     }
-    print('user story id' + userStoryId);
-    print('project id' + projectId);
     var url = URL_Address + '/delete/project/userStory';
     var body = json.encode({
       'userStoryId': userStoryId,
@@ -322,11 +316,10 @@ void deleteUserStory(myUserStoryIndex, context) async {
     http.Response response = await http.post(url, body: body, headers: headers);
 
     if (response.statusCode == 200) {
-      print('user story deleted');
       //TODO    updateStatus("User story deleted");
       getUserStorys(myProjects[myProjectIndex],context);
     } else {
-      printError(response);
+      //printError(response);
       myApiError = new ApiError.fromJson(json.decode(response.body));
       //TODO    showErrorMessage('Error',myApiError.error);
     }
@@ -356,15 +349,14 @@ void deleteProject(myProjectIndex,context) async {
       };
       http.Response response = await http.post(url, body: body, headers: headers);
       if (response.statusCode == 200) {
-        print('project deleted');
         getProjects(myDeveloper, -1,context);
       } else {
-        printError(response);
+        //printError(response);
         myApiError = new ApiError.fromJson(json.decode(response.body));
         //TODO    showErrorMessage('Error',myApiError.error);
       }
     } else {
-      printError(response);
+      //printError(response);
       myApiError = new ApiError.fromJson(json.decode(response.body));
       //TODO    showErrorMessage('Error',myApiError.error);
     }

@@ -129,6 +129,7 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
 
   @override
   void initState() {
+    print('init state called');
     super.initState();
     //print ('init logged in screen');
     _selectedChoices = null;
@@ -140,12 +141,16 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
     }
 
     if (myLastSelectedProject >= 0) {
-      print('update user storys');
+      userStoryCardsToDo = <UserStoryCard>[];
+      userStoryCardsDoing = <UserStoryCard>[];
+      userStoryCardsVerify = <UserStoryCard>[];
+      userStoryCardsDone = <UserStoryCard>[];
       _selectedChoices = choices[myLastSelectedProject];
       userStoryCardsToDo = updateUserStoryCards('0');
       userStoryCardsDoing = updateUserStoryCards('1');
       userStoryCardsVerify = updateUserStoryCards('2');
       userStoryCardsDone = updateUserStoryCards('3');
+      print(userStoryCardsDone);
     }
   }
 
@@ -163,7 +168,7 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
             bottom: TabBar(
               onTap: (int index) {
                 myLastSelectedPhase = index.toString();
-                print('tab index is $index');
+                //print('tab index is $index');
               },
 
               indicatorColor: Colors.white,
@@ -224,7 +229,7 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
                     elevation: 3.2,
                     initialValue: _selectedChoices,
                     onCanceled: () {
-                      print('user canceled popup');
+                      //print('user canceled popup');
                     },
                     tooltip: 'Projects list',
                     onSelected: _select,
@@ -312,14 +317,13 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
 
   @override
   void deactivate() {
-    //print ('logged in  deactivated');
     super.deactivate();
   }
 }
 
 editUserStoryPressed(index, context) {
-  myLastSelectedPhase = myUserStorys[index].phase;
   myLastSelectedUserStory = index;
+  myLastSelectedPhase = myUserStorys[index].phase;
   MyLoggedInPage.of(context)._editUserStory();
 }
 
@@ -331,9 +335,8 @@ deleteUserStoryPressed(index, context) {
 
 moveUserStoryToNextPhasePressed(index, context) {
   myLastSelectedUserStory = index;
-  print("send to sprint " + index.toString());
   myLastSelectedPhase = myUserStorys[index].phase;
-  int myCurrentPhase = int.parse(myUserStorys[myLastSelectedUserStory].phase);
+  int myCurrentPhase = int.parse(myUserStorys[index].phase);
   if (myCurrentPhase < 3) {
     myCurrentPhase += 1;
     myUserStorys[myLastSelectedUserStory].phase = myCurrentPhase.toString();
@@ -346,11 +349,11 @@ class UserStoryCard extends StatelessWidget {
       {@required this.userStoryTitle,
       @required this.userStoryBody,
       @required this.index,
-      @required this.phase});
+      @required this.phaseIcon});
   final String userStoryTitle;
   final String userStoryBody;
   final int index;
-  final IconData phase;
+  final IconData phaseIcon;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -392,7 +395,7 @@ class UserStoryCard extends StatelessWidget {
                   ),
                   IconButton(
                     tooltip: 'Send to sprint',
-                    icon: Icon(phase),
+                    icon: Icon(phaseIcon),
                     onPressed: () =>
                         moveUserStoryToNextPhasePressed(index, context),
                   ),
@@ -534,7 +537,7 @@ void updateProjectChoices() {
 
 List<ProjectPopupMenu> choices = <ProjectPopupMenu>[];
 
-List<UserStoryCard> updateUserStoryCards(selectedPhase) {
+List<UserStoryCard> updateUserStoryCards(String selectedPhase) {
   List<Widget> userStoryCards = <UserStoryCard>[];
   String userStoryBody;
   IconData myIcon;
@@ -573,7 +576,7 @@ List<UserStoryCard> updateUserStoryCards(selectedPhase) {
           userStoryTitle: myUserStorys[i].userStoryTitle,
           userStoryBody: userStoryBody,
           index: i,
-          phase: myIcon));
+          phaseIcon: myIcon));
     }
   }
   return userStoryCards;

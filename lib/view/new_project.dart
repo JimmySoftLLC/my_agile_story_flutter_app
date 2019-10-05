@@ -17,8 +17,6 @@ class _NewProjectState extends State<NewProject> {
   String description = '';
 
   void validateEntries() {
-    print (name.toString());
-    print (description.toString());
     if (name == '' ) {
       setState(() {
         myText = 'Project must have a name.';

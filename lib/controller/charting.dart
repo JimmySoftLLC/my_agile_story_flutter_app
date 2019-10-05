@@ -16,22 +16,34 @@ List<int> myXs = [];
 orderUserStorysBySprintId(){
   totalProjectPoints = 0;
   sprints = [];
-  myUserStorys.sort((obj1, obj2) {return obj1.sprint - obj2.sprint;});
-  //print(myUserStorys);
+  var myUserStorysTemp = [];
+  for (int i =0; i < myUserStorys.length; i++ ){
+    myUserStorysTemp.add(new UserStory(myUserStorys[i].id,
+        myUserStorys[i].userStoryTitle,
+        myUserStorys[i].userRole,
+        myUserStorys[i].userWant,
+        myUserStorys[i].userBenefit,
+        myUserStorys[i].acceptanceCriteria,
+        myUserStorys[i].conversation,
+        myUserStorys[i].estimate,
+        myUserStorys[i].phase,
+        myUserStorys[i].percentDone,
+        myUserStorys[i].priority,
+        myUserStorys[i].sprint,
+        myUserStorys[i].projectId));
+  }
+  myUserStorysTemp.sort((obj1, obj2) {return obj1.sprint - obj2.sprint;});
   var mySprindId = 0;
-  for (int i = 0; i < myUserStorys.length; i++) {
-    if (mySprindId != myUserStorys[i].sprint) {
-      mySprindId = myUserStorys[i].sprint;
+  for (int i = 0; i < myUserStorysTemp.length; i++) {
+    if (mySprindId != myUserStorysTemp[i].sprint) {
+      mySprindId = myUserStorysTemp[i].sprint;
       sprints.add(0);
     }
     if (sprints.length > 0) {
-      sprints[sprints.length-1] += myUserStorys[i].estimate;
-      //print("total sprint points = " + sprints[sprints.length-1].toString());
+      sprints[sprints.length-1] += myUserStorysTemp[i].estimate;
     }
-    totalProjectPoints += myUserStorys[i].estimate;
-    //print("total project points = " + totalProjectPoints.toString());
+    totalProjectPoints += myUserStorysTemp[i].estimate;
   }
-  //print(sprints);
 }
 
 calculateDataForBurnDownChart() {
@@ -48,12 +60,8 @@ calculateDataForBurnDownChart() {
     myXs.add(i);
     burndown.add(totalProjectPoints.toDouble() - tempDoneSoFar.toDouble());
     tempDoneSoFar += sprints[i];
-    //print("Done  " + done[i].toString() + " Sprint  " + sprints[i].toString() + " Todo  " + todo[i].toString());
   }
   StraightLineFit();
-  //print(myXs);
-  //print(burndown);
-  //print(labelsForChart);
 }
 
 StraightLineFit() {

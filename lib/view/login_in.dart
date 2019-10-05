@@ -11,12 +11,10 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   String myText = '';
-  String email = 'flutter@anywhere.com';
-  String password = '1234';
+  String email = '';
+  String password = '';
 
   void validateEntries(context) {
-    //print (email.toString());
-    //print (password.toString());
     if (email == '' || password == '' ) {
       setState(() {
         myText = 'No entries please enter email and password.';
@@ -67,7 +65,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: 24.0,
               ),
               TextField(
-                //controller: TextEditingController()..text = 'flutter@anywhere.com',
                 onChanged: (value) {
                   email = value;
                 },
@@ -94,7 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: 8.0,
               ),
               TextField(
-                //controller: TextEditingController()..text = '',
+                obscureText: true,
                 onChanged: (value) {
                   password=value;
                 },

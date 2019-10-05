@@ -78,6 +78,7 @@ class _EditUserState extends State<EditUser> {
               ),
               TextField(
                 controller: TextEditingController()..text = myDeveloper.password,
+                obscureText: true,
                 onChanged: (value) {
                   myDeveloper.password = value;
                 },
