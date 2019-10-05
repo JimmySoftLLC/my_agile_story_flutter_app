@@ -27,3 +27,6 @@ This list is here primarly to inform my readers of the timeline of development. 
   3. Add burn down chart, create icon for the program (Done 2019-10-4)
 
 At this point the program is entirely functional and can be used.
+
+
+![MyAgileStory Image](https://www.jimmysoftllc.com/img/portfolio/08-full.jpg "Description goes here")
