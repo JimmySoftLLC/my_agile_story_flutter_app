@@ -66,7 +66,19 @@ void getProjects(thisDeveloper,myProjectIndex,context) async {
     //getUserStorys(myProjects[0]);
 
     //testUpdateUserStory(myProjects[0]);
-      Navigator.pushNamedAndRemoveUntil(context, MyLoggedInPage.id,(Route<dynamic> route) => false);
+     // Navigator.pushNamedAndRemoveUntil(context, MyLoggedInPage.id,(Route<dynamic> route) => false);
+
+    Route _createRoute() {
+      return PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => MyLoggedInPage(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+      );
+    }
+
+    Navigator.of(context).pushAndRemoveUntil(_createRoute(),(Route<dynamic> PageRouteBuilder) => false);
+
   } else {
     myApiError = new ApiError.fromJson(json.decode(response.body));
     messagePopup('Error!',Colors.red,myApiError.error,context);
@@ -93,7 +105,18 @@ void getUserStorys(thisProject, context) async {
 
     myUserStorys.sort((obj1, obj2) {return obj1.priority - obj2.priority;});
 
-    Navigator.pushNamedAndRemoveUntil(context, MyLoggedInPage.id,(Route<dynamic> route) => false);
+    //Navigator.pushNamedAndRemoveUntil(context, MyLoggedInPage.id,(Route<dynamic> route) => false);
+
+    Route _createRoute() {
+      return PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => MyLoggedInPage(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+      );
+    }
+
+    Navigator.of(context).pushAndRemoveUntil(_createRoute(),(Route<dynamic> PageRouteBuilder) => false);
 
     //testDeleteUserStory(0);
     //testDeleteProject(0);

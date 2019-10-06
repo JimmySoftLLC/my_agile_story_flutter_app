@@ -12,7 +12,6 @@ List<UserStoryCard> updateUserStoryCards(String selectedPhase) {
   int percentDone;
   for (int i = 0; i < myUserStorys.length; i++) {
     if (selectedPhase == myUserStorys[i].phase) {
-
       switch (myUserStorys[i].phase) {
         case '0':
           {
@@ -43,35 +42,78 @@ List<UserStoryCard> updateUserStoryCards(String selectedPhase) {
           ' so that ' +
           myUserStorys[i].userBenefit;
       myUserStoryTitle = 'S' + myUserStorys[i].sprint.toString() + ' - ' + myUserStorys[i].userStoryTitle;
+
       percentDone = myUserStorys[i].percentDone;
-      if (percentDone < 0) {percentDone = 0;}
-      if (percentDone > 100) {percentDone = 100;}
+      if (percentDone < 0) {myUserStorys[i].percentDone = 0;}
+      if (percentDone > 100) {myUserStorys[i].percentDone = 100;}
+      percentDone = myUserStorys[i].percentDone;
+
+      if (myUserStorys[i].priority < 1) {myUserStorys[i].priority = 1;}
+      if (myUserStorys[i].priority > 10) {myUserStorys[i].priority = 10;}
+
       userStoryCards.add(new UserStoryCard(
         userStoryTitle: myUserStoryTitle,
         userStoryBody: userStoryBody,
         index: i,
         phaseIcon: myIcon,
-        progressValue: percentDone/100,
-        progressText: percentDone.toString() + '%',));
+        percentDoneValue: percentDone/100,
+        percentDoneText: percentDone.toString() + '%',
+        estimate: myUserStorys[i].estimate.toString(),
+        sliderVal:myUserStorys[i].priority,
+      ));
     }
   }
   return userStoryCards;
 }
 
-class UserStoryCard extends StatelessWidget {
-  UserStoryCard(
-      {@required this.userStoryTitle,
-        @required this.userStoryBody,
-        @required this.index,
-        @required this.phaseIcon,
-        @required this.progressValue,
-        @required this.progressText,});
+class UserStoryCard extends StatefulWidget {
+  UserStoryCard({@required this.userStoryTitle,
+    @required this.userStoryBody,
+    @required this.index,
+    @required this.phaseIcon,
+    @required this.percentDoneValue,
+    @required this.percentDoneText,
+    @required this.estimate,
+    @required this.sliderVal
+  });
+
   final String userStoryTitle;
   final String userStoryBody;
   final int index;
   final IconData phaseIcon;
-  final double progressValue;
-  final String progressText;
+  final double percentDoneValue;
+  final String percentDoneText;
+  final String estimate;
+  final int sliderVal;
+
+  @override
+  State<UserStoryCard> createState() => new _UserStoryCardState();
+}
+
+class _UserStoryCardState extends State<UserStoryCard> {
+  String _userStoryTitle;
+  String _userStoryBody;
+  int _index;
+  IconData _phaseIcon;
+  double _percentDoneValue;
+  String _percentDoneText;
+  String _estimate;
+  int _sliderVal;
+  bool hitState = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _userStoryTitle = widget.userStoryTitle;
+    _userStoryBody = widget.userStoryBody;
+    _index = widget.index;
+    _phaseIcon = widget.phaseIcon;
+    _percentDoneValue = widget.percentDoneValue;
+    _percentDoneText = widget.percentDoneText;
+    _estimate = widget.estimate;
+    _sliderVal = widget.sliderVal;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -85,12 +127,18 @@ class UserStoryCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(userStoryTitle,
-                      style: TextStyle(fontWeight: FontWeight.w700)),
+                  Text(
+                      _userStoryTitle,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                      )),
                   SizedBox(
                     height: 8.0,
                   ),
-                  Text(userStoryBody),
+                  Text(
+                    _userStoryBody,
+                  ),
                 ],
               ),
             ),
@@ -101,46 +149,84 @@ class UserStoryCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Padding(
-                  padding: EdgeInsets.all(0.0),
+                  padding: EdgeInsets.fromLTRB(0, 10, 5, 0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       LinearPercentIndicator(
-                        width: 160.0,
+                        width: 120.0,
                         lineHeight: 14.0,
-                        percent: progressValue,
+                        percent: _percentDoneValue,
                         center: Text(
-                          progressText,
+                          _percentDoneText,
                           style: TextStyle(fontSize: 12.0),
                         ),
                         linearStrokeCap: LinearStrokeCap.roundAll,
                         backgroundColor: Colors.grey,
                         progressColor: Colors.blue,
                       ),
+                      SizedBox(
+                        width: 2.0,
+                      ),
+                      Text(
+                        _estimate,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 12.0),
+                      ),
                     ],
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.all(0.0),
+                  padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       IconButton(
                         tooltip: 'Edit user story',
                         icon: Icon(FontAwesomeIcons.edit),
-                        onPressed: () => editUserStoryPressed(index, context),
+                        onPressed: () => editUserStoryPressed(_index, context),
                       ),
                       IconButton(
                         tooltip: 'Delete user story',
                         icon: Icon(FontAwesomeIcons.trash),
-                        onPressed: () => deleteUserStoryPressed(index, context),
+                        onPressed: () => deleteUserStoryPressed(_index, context),
                       ),
                       IconButton(
                         tooltip: 'Send to sprint',
-                        icon: Icon(phaseIcon),
+                        icon: Icon(_phaseIcon),
                         onPressed: () =>
-                            moveUserStoryToNextPhasePressed(index, context),
+                            moveUserStoryToNextPhasePressed(_index, context),
                       ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Slider(
+                        value: _sliderVal.toDouble(),
+                        min: 1.0,
+                        max: 10.0,
+                        divisions: 10,
+                        activeColor: Colors.blue,
+                        inactiveColor: Colors.black,
+                        label: _sliderVal.toString(),
+                        onChanged: (double changedValue) {
+                          setState(() {
+                            _sliderVal = changedValue.round();
+                          });
+                        },
+                        onChangeEnd: (double endValue) {
+                          if (!hitState) {
+                            hitState=true;
+                            var endValueToSend = endValue.round();
+                            print ('end state ' + endValueToSend.toString());
+                            changeUserStoryPriorityUsingSlider(_index, endValueToSend.toInt(),context);
+                          }
+                        },
+                      )
                     ],
                   ),
                 ),
@@ -180,4 +266,10 @@ moveUserStoryToNextPhasePressed(index, context) {
     myUserStorys[myLastSelectedUserStory].phase = myCurrentPhase.toString();
   }
   MyLoggedInPage.of(context).moveUserStoryToNextPhaseInContext();
+}
+
+changeUserStoryPriorityUsingSlider(index, newValue, context) {
+  myLastSelectedUserStory = index;
+  myUserStorys[myLastSelectedUserStory].priority = newValue;
+  MyLoggedInPage.of(context).changeUserStoryPriorityUsingSliderInContext();
 }

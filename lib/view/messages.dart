@@ -42,7 +42,7 @@ void messagePopupNoDismiss(String title, Color titleColor, String message, conte
       // return object of type Dialog
       return AlertDialog(
         title: Text(
-          title,
+          'Updating data',
           style: TextStyle(color: titleColor),
         ),
         content: Text(message),

@@ -33,6 +33,12 @@ class MyLoggedInPage extends StatefulWidget {
       context.ancestorStateOfType(const TypeMatcher<_MyLoggedInPageState>());
   @override
   _MyLoggedInPageState createState() => _MyLoggedInPageState();
+
+  @override
+  Widget buildTransitions(BuildContext context, Animation<double> animation,
+      Animation<double> secondaryAnimation, Widget child) {
+    return child;
+  }
 }
 
 class _MyLoggedInPageState extends State<MyLoggedInPage> {
@@ -58,12 +64,19 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
   }
 
   void moveUserStoryToNextPhaseInContext() {
+    messagePopupNoDismiss('',Colors.black,'Moving user story to next phase please wait',context);
     editUserStory(myProjects[myLastSelectedProject],
         myUserStorys[myLastSelectedUserStory], context);
   }
 
   void deleteWarningPopupInContext(String itemType, String itemName, context) {
     deleteWarningPopup( itemType,  itemName, context);
+  }
+
+  void changeUserStoryPriorityUsingSliderInContext() {
+    messagePopupNoDismiss('',Colors.black,'Reordering user stories please wait',context);
+    editUserStory(myProjects[myLastSelectedProject],
+        myUserStorys[myLastSelectedUserStory], context);
   }
 
   @override
