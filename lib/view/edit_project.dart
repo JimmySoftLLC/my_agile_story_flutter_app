@@ -16,7 +16,7 @@ class _EditProjectState extends State<EditProject> {
 
   void validateEntries() {
       setState(() {
-        myMessageText = 'Saving project user please wait.';
+        myMessageText = 'Saving project please wait.';
       });
       editProject(myDeveloper,myProjects[myLastSelectedProject],myLastSelectedProject,context);
   }

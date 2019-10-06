@@ -9,13 +9,23 @@ import 'package:my_agile_story_flutter_app/controller/project.dart';
 import 'package:my_agile_story_flutter_app/view/edit_project.dart';
 import 'package:my_agile_story_flutter_app/view/new_user_story.dart';
 import 'package:my_agile_story_flutter_app/view/edit_user_story.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
-import 'package:my_agile_story_flutter_app/controller/charting.dart';
+import 'package:my_agile_story_flutter_app/view/messages.dart';
+import 'package:my_agile_story_flutter_app/view/charting_view.dart';
+import 'package:my_agile_story_flutter_app/view/user_story_cards.dart';
+import 'dart:async';
 
 String myLastSelectedPhase = '0';
 int myLastSelectedProject = -1;
 int myLastSelectedUserStory = -1;
 String chartTitle = '';
+Timer dudeTimer;
+
+// runs every 1 second
+void StartTimer() {
+  dudeTimer = new Timer.periodic(new Duration(seconds: 3), (timer) {
+    debugPrint(timer.tick.toString());
+  });
+}
 
 class MyLoggedInPage extends StatefulWidget {
   static const String id = '/MyLoggedInPage';
@@ -38,100 +48,27 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
       _selectedChoices = choice;
       myLastSelectedProject = choice.id;
       chartTitle = 'Burndown for: ' + myProjects[myLastSelectedProject].name;
+      messagePopupNoDismiss('',Colors.black,'Getting project please wait',context);
       getUserStorys(myProjects[choice.id], context);
     });
   }
 
-  void _editUserStory() {
+  void editUserStoryInContext() {
     Navigator.pushReplacementNamed(context, EditUserStory.id);
   }
 
-  void _moveUserStoryToNextPhase() {
+  void moveUserStoryToNextPhaseInContext() {
     editUserStory(myProjects[myLastSelectedProject],
         myUserStorys[myLastSelectedUserStory], context);
   }
 
-  void _deleteWarningPopup(String itemType, String itemName) {
-    // flutter defined function
-    showDialog(
-      context: context,
-      barrierDismissible: false, // user must tap button for close dialog!,
-      builder: (BuildContext context) {
-        // return object of type Dialog
-        return AlertDialog(
-          title: Text('Delete Warning !', style: TextStyle(color: Colors.red)),
-          content: myRichText(itemType, itemName),
-          actions: <Widget>[
-            FlatButton(
-              child: const Text('CANCEL'),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-            FlatButton(
-              child: const Text('DELETE'),
-              onPressed: () {
-                switch (itemType) {
-                  case 'user story':
-                    {
-                      print('user story delete');
-                      deleteUserStory(myLastSelectedUserStory, context);
-                    }
-                    break;
-                  case 'project':
-                    {
-                      print('project delete');
-                      deleteProject(myLastSelectedProject, context);
-                      myLastSelectedProject = -1;
-                    }
-                    break;
-                  default:
-                    {}
-                    break;
-                }
-              },
-            )
-          ],
-        );
-      },
-    );
-  }
-
-  void _messagePopup(String message) {
-    // flutter defined function
-    showDialog(
-      context: context,
-      barrierDismissible: false, // user must tap button for close dialog!,
-      builder: (BuildContext context) {
-        // return object of type Dialog
-        return AlertDialog(
-          title: Text(
-            'Note',
-          ),
-          content: Text(message),
-          actions: <Widget>[
-            FlatButton(
-              child: const Text(
-                'OK',
-                style: TextStyle(
-                  fontSize: 17,
-                ),
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        );
-      },
-    );
+  void deleteWarningPopupInContext(String itemType, String itemName, context) {
+    deleteWarningPopup( itemType,  itemName, context);
   }
 
   @override
   void initState() {
-    print('init state called');
     super.initState();
-    //print ('init logged in screen');
     _selectedChoices = null;
 
     updateProjectChoices();
@@ -150,13 +87,11 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
       userStoryCardsDoing = updateUserStoryCards('1');
       userStoryCardsVerify = updateUserStoryCards('2');
       userStoryCardsDone = updateUserStoryCards('3');
-      print(userStoryCardsDone);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    //print ('logged in screen built');
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: DefaultTabController(
@@ -168,7 +103,6 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
             bottom: TabBar(
               onTap: (int index) {
                 myLastSelectedPhase = index.toString();
-                //print('tab index is $index');
               },
 
               indicatorColor: Colors.white,
@@ -229,7 +163,6 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
                     elevation: 3.2,
                     initialValue: _selectedChoices,
                     onCanceled: () {
-                      //print('user canceled popup');
                     },
                     tooltip: 'Projects list',
                     onSelected: _select,
@@ -257,11 +190,11 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
                   icon: Icon(FontAwesomeIcons.trash),
                   onPressed: () {
                     if (myLastSelectedProject != -1) {
-                      _deleteWarningPopup(
-                          'project', myProjects[myLastSelectedProject].name);
+                      deleteWarningPopupInContext(
+                          'project', myProjects[myLastSelectedProject].name, context);
                     } else {
-                      _messagePopup(
-                          'No project selected to delete.   Select an existing project under the ... menu first.');
+                      messagePopup('Note',Colors.black,
+                          'No project selected to delete.   Select an existing project under the ... menu first.',context);
                     }
                   },
                 ),
@@ -273,8 +206,8 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
                       Navigator.pushNamedAndRemoveUntil(context, EditProject.id,
                           (Route<dynamic> route) => false);
                     } else {
-                      _messagePopup(
-                          'No project selected to edit.   Select an existing project under the ... menu first.');
+                      messagePopup('Note',Colors.black,
+                          'No project selected to edit.   Select an existing project under the ... menu first.',context);
                     }
                   },
                 ),
@@ -286,8 +219,8 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
                       Navigator.pushNamedAndRemoveUntil(context,
                           NewUserStory.id, (Route<dynamic> route) => false);
                     } else {
-                      _messagePopup(
-                          'No project selected to add a user story to.   Create a new project or select an existing project under the ... menu first.');
+                      messagePopup('Note',Colors.black,
+                          'No project selected to add a user story to.   Create a new project or select an existing project under the ... menu first.',context);
                     }
                   },
                 ),
@@ -321,207 +254,6 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
   }
 }
 
-editUserStoryPressed(index, context) {
-  myLastSelectedUserStory = index;
-  myLastSelectedPhase = myUserStorys[index].phase;
-  MyLoggedInPage.of(context)._editUserStory();
-}
-
-deleteUserStoryPressed(index, context) {
-  myLastSelectedUserStory = index;
-  myLastSelectedPhase = myUserStorys[index].phase;
-  MyLoggedInPage.of(context)._deleteWarningPopup('user story', myUserStorys[index].userStoryTitle);
-}
-
-moveUserStoryToNextPhasePressed(index, context) {
-  myLastSelectedUserStory = index;
-  myLastSelectedPhase = myUserStorys[index].phase;
-  int myCurrentPhase = int.parse(myUserStorys[index].phase);
-  if (myCurrentPhase < 3) {
-    myCurrentPhase += 1;
-    myUserStorys[myLastSelectedUserStory].phase = myCurrentPhase.toString();
-  }
-  MyLoggedInPage.of(context)._moveUserStoryToNextPhase();
-}
-
-class UserStoryCard extends StatelessWidget {
-  UserStoryCard(
-      {@required this.userStoryTitle,
-      @required this.userStoryBody,
-      @required this.index,
-      @required this.phaseIcon});
-  final String userStoryTitle;
-  final String userStoryBody;
-  final int index;
-  final IconData phaseIcon;
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Row(
-        children: <Widget>[
-          Expanded(
-            flex: 50,
-            child: Container(
-              padding: new EdgeInsets.fromLTRB(10, 10, 0, 10),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(userStoryTitle,
-                      style: TextStyle(fontWeight: FontWeight.w700)),
-                  SizedBox(
-                    height: 8.0,
-                  ),
-                  Text(userStoryBody),
-                ],
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 50,
-            child: Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  IconButton(
-                    tooltip: 'Edit user story',
-                    icon: Icon(FontAwesomeIcons.edit),
-                    onPressed: () => editUserStoryPressed(index, context),
-                  ),
-                  IconButton(
-                    tooltip: 'Delete user story',
-                    icon: Icon(FontAwesomeIcons.trash),
-                    onPressed: () => deleteUserStoryPressed(index, context),
-                  ),
-                  IconButton(
-                    tooltip: 'Send to sprint',
-                    icon: Icon(phaseIcon),
-                    onPressed: () =>
-                        moveUserStoryToNextPhasePressed(index, context),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-      height: 130,
-      margin: EdgeInsets.all(5.0),
-      decoration: BoxDecoration(
-        color: Colors.black12,
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-    );
-  }
-}
-
-RichText myRichText(String itemType, String itemName) {
-  var text = new RichText(
-    text: new TextSpan(
-      // Note: Styles for TextSpans must be explicitly defined.
-      // Child text spans will inherit styles from parent
-      style: new TextStyle(
-        fontSize: 14.0,
-        color: Colors.black,
-      ),
-      children: <TextSpan>[
-        new TextSpan(
-            text: 'You are about to delete ' + itemType + ', ',
-            style: new TextStyle(fontSize: 17)),
-        new TextSpan(
-            text: itemName,
-            style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
-        new TextSpan(
-            text: '.  This process is irreversable are you sure?',
-            style: new TextStyle(fontSize: 17)),
-      ],
-    ),
-  );
-  return text;
-}
-
-class BurnDownChart extends StatelessWidget {
-  final List<charts.Series> seriesList;
-  final bool animate;
-
-  BurnDownChart(this.seriesList, {this.animate});
-
-  factory BurnDownChart.withData() {
-    return new BurnDownChart(
-      _createBurnDownDataSet(),
-      animate: true,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return new charts.OrdinalComboChart(seriesList,
-        animate: animate,
-        // Configure the default renderer as a bar renderer.
-        defaultRenderer: new charts.BarRendererConfig(
-            groupingType: charts.BarGroupingType.stacked),
-        // Custom renderer configuration for the line series. This will be used for
-        // any series that does not define a rendererIdKey.
-        customSeriesRenderers: [
-          new charts.LineRendererConfig(
-              // ID used to link series to this renderer.
-              customRendererId: 'customLine')
-        ]);
-  }
-}
-
-/// Sample ordinal data type.
-class GraphData {
-  final String sprint;
-  final double points;
-  GraphData(this.sprint, this.points);
-}
-
-/// Create series list with multiple series
-List<charts.Series<GraphData, String>> _createBurnDownDataSet() {
-  generateBurnChartData();
-  List<GraphData> sprintData = [];
-  List<GraphData> toDoData = [];
-  List<GraphData> velocityData = [];
-
-  if (burndown.length > 1){
-    for (int i = 0; i < burndown.length; i++) {
-      sprintData.add(new GraphData('S'+ i.toString(), sprints[i].toDouble()));
-    }
-
-    for (int i = 0; i < burndown.length; i++) {
-      toDoData.add(new GraphData('S'+ i.toString(), todo[i].toDouble()));
-    }
-
-    for (int i = 0; i < burndown.length; i++) {
-      velocityData.add(new GraphData('S'+ i.toString(), burndown[i]));
-    }
-  }
-
-  return [
-    new charts.Series<GraphData, String>(
-        id: 'Sprint',
-        colorFn: (_, __) => charts.MaterialPalette.green.shadeDefault,
-        domainFn: (GraphData sprint, _) => sprint.sprint,
-        measureFn: (GraphData sprint, _) => sprint.points,
-        data: sprintData),
-    new charts.Series<GraphData, String>(
-        id: 'ToDo',
-        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-        domainFn: (GraphData sprint, _) => sprint.sprint,
-        measureFn: (GraphData sprint, _) => sprint.points,
-        data: toDoData),
-    new charts.Series<GraphData, String>(
-        id: 'Velocity',
-        colorFn: (_, __) => charts.MaterialPalette.red.shadeDefault,
-        domainFn: (GraphData sprint, _) => sprint.sprint,
-        measureFn: (GraphData sprint, _) => sprint.points,
-        data: velocityData)
-      // Configure our custom line renderer for this series.
-      ..setAttribute(charts.rendererIdKey, 'customLine'),
-  ];
-}
-
 class ProjectPopupMenu {
   final String title;
   final int id;
@@ -536,48 +268,3 @@ void updateProjectChoices() {
 }
 
 List<ProjectPopupMenu> choices = <ProjectPopupMenu>[];
-
-List<UserStoryCard> updateUserStoryCards(String selectedPhase) {
-  List<Widget> userStoryCards = <UserStoryCard>[];
-  String userStoryBody;
-  IconData myIcon;
-  for (int i = 0; i < myUserStorys.length; i++) {
-    if (selectedPhase == myUserStorys[i].phase) {
-      switch (myUserStorys[i].phase) {
-        case '0':
-          {
-            myIcon = FontAwesomeIcons.running;
-          }
-          break;
-        case '1':
-          {
-            myIcon = FontAwesomeIcons.check;
-          }
-          break;
-        case '2':
-          {
-            myIcon = FontAwesomeIcons.handsHelping;
-          }
-          break;
-        case '3':
-          {}
-          break;
-        default:
-          {}
-          break;
-      }
-      userStoryBody = 'As a ' +
-          myUserStorys[i].userRole +
-          ', I want ' +
-          myUserStorys[i].userWant +
-          ' so that ' +
-          myUserStorys[i].userBenefit;
-      userStoryCards.add(new UserStoryCard(
-          userStoryTitle: myUserStorys[i].userStoryTitle,
-          userStoryBody: userStoryBody,
-          index: i,
-          phaseIcon: myIcon));
-    }
-  }
-  return userStoryCards;
-}

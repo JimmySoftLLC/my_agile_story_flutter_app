@@ -20,7 +20,7 @@ class _EditUserState extends State<EditUser> {
       });
     }else{
       setState(() {
-        myMessageText = 'Registering user please wait.';
+        myMessageText = 'Saving user please wait.';
       });
       editDeveloper(myDeveloper,context);
     }

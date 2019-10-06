@@ -20,8 +20,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   String bio = '';
 
   void validateEntries() {
-    print (email.toString());
-    print (password.toString());
     if (password == '' ) {
       setState(() {
         myText = 'No entries please enter email and password.';

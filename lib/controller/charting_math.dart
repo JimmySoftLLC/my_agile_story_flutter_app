@@ -9,7 +9,6 @@ int totalProjectPoints = 0;
 List<int> sprints = [];
 List<int> todo = [];
 List<int> done = [];
-List<String> labelsForChart = [];
 List<double> burndown = [];
 List<int> myXs = [];
 
@@ -67,16 +66,11 @@ calculateDataForBurnDownChart() {
 StraightLineFit() {
   var mySlopeIntercept = linearRegression(burndown,myXs);
   int i = 0;
-  labelsForChart = [];
   burndown =[];
   burndown.add(mySlopeIntercept['slope'] * i + mySlopeIntercept['intercept']);
-  String myItem = 'S' + (i + 1).toString();
-  labelsForChart.add(myItem);
   while (burndown[i] > 0 && i < sprints.length +10) {
     i +=1;
     burndown.add(mySlopeIntercept['slope'] * i + mySlopeIntercept['intercept']);
-    myItem = 'S'+(i+1).toString();
-    labelsForChart.add(myItem);
     sprints.add(0);
     todo.add(0);
   }
@@ -102,3 +96,5 @@ linearRegression(y,x){
 
   return lr;
 }
+
+
