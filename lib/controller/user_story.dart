@@ -12,6 +12,7 @@ class UserStory {
   int priority;
   int sprint;
   String projectId;
+  String timeStampISO;
 
   UserStory (id,userStoryTitle,userRole,userWant,userBenefit,acceptanceCriteria,conversation,estimate,phase,percentDone,priority,sprint,projectId) {
     this.id = id;
@@ -43,6 +44,7 @@ class UserStory {
     this.priority = json['priority'];
     this.sprint = json['sprint'];
     this.projectId = json['projectId'];
+    this.timeStampISO = json['timeStampISO'];
   }
 }
 

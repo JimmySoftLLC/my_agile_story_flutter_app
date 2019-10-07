@@ -4,6 +4,7 @@ class Project {
   String description;
   List<dynamic> developerIds;
   List<dynamic> userStoryIds;
+  String timeStampISO;
 
   Project (id,name,description) {
     this.id = id;
@@ -17,6 +18,7 @@ class Project {
     this.description = json['description'];
     this.developerIds = json['developerIds'];
     this.userStoryIds = json['userStoryIds'];
+    this.timeStampISO = json['timeStampISO'];
   }
 }
 

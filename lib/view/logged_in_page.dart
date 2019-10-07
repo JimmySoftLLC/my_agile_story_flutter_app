@@ -18,14 +18,6 @@ String myLastSelectedPhase = '0';
 int myLastSelectedProject = -1;
 int myLastSelectedUserStory = -1;
 String chartTitle = '';
-Timer dudeTimer;
-
-// runs every 1 second
-void StartTimer() {
-  dudeTimer = new Timer.periodic(new Duration(seconds: 3), (timer) {
-    debugPrint(timer.tick.toString());
-  });
-}
 
 class MyLoggedInPage extends StatefulWidget {
   static const String id = '/MyLoggedInPage';
@@ -46,7 +38,7 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
   List<Widget> userStoryCardsDoing = <UserStoryCard>[];
   List<Widget> userStoryCardsVerify = <UserStoryCard>[];
   List<Widget> userStoryCardsDone = <UserStoryCard>[];
-
+  Timer timer;
   ProjectPopupMenu _selectedChoices;
 
   void _select(ProjectPopupMenu choice) {
@@ -55,7 +47,7 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
       myLastSelectedProject = choice.id;
       chartTitle = 'Burndown for: ' + myProjects[myLastSelectedProject].name;
       messagePopupNoDismiss('',Colors.black,'Getting project please wait',context);
-      getUserStorys(myProjects[choice.id], context);
+      getUserStorys(myProjects[choice.id], context, false);
     });
   }
 
@@ -79,17 +71,20 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
         myUserStorys[myLastSelectedUserStory], context);
   }
 
+  void updateProjectInContext(){
+    if(myLastSelectedProject != -1) {
+      getProject(myProjects[myLastSelectedProject],context);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     _selectedChoices = null;
-
     updateProjectChoices();
-
     if (myLastSelectedProject > myProjects.length - 1) {
       myLastSelectedProject = myProjects.length - 1;
     }
-
     if (myLastSelectedProject >= 0) {
       userStoryCardsToDo = <UserStoryCard>[];
       userStoryCardsDoing = <UserStoryCard>[];
@@ -101,6 +96,9 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
       userStoryCardsVerify = updateUserStoryCards('2');
       userStoryCardsDone = updateUserStoryCards('3');
     }
+    timer = Timer.periodic(Duration(seconds: 5), (Timer t) {
+      updateProjectInContext();
+    });
   }
 
   @override
@@ -263,6 +261,7 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
 
   @override
   void deactivate() {
+    timer?.cancel();
     super.deactivate();
   }
 }

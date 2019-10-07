@@ -11,6 +11,7 @@ Function printDeveloper (myDeveloper,response) {
   print('password: ' + myDeveloper.password);
   print('bio: ' + myDeveloper.bio);
   print('role: ' + myDeveloper.role);
+  print('timeStampISO: ' + myDeveloper.timeStampISO);
   for (int i = 0; i < myDeveloper.projectIds.length; i++) {
     print(myDeveloper.projectIds[i]);
   }
@@ -23,6 +24,7 @@ Function printProject (myProject,response) {
   print('id: ' + myProject.id);
   print('name: ' + myProject.name);
   print('description: ' + myProject.description);
+  print('timeStampISO: ' + myProject.timeStampISO);
   for (int i = 0; i < myProject.developerIds.length; i++) {
     print('developerId: ' + myProject.developerIds[i]);
   }
@@ -61,6 +63,7 @@ Function printUserStoryWithoutResponse (myUserStory) {
   print('percentDone: ' + myUserStory.percentDone.toString());
   print('priority: ' + myUserStory.priority.toString());
   print('sprint: ' + myUserStory.sprint.toString());
+  print('timeStampISO: ' + myUserStory.timeStampISO);
   return null;
 }
 

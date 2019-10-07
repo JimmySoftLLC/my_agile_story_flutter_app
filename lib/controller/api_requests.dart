@@ -8,6 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:my_agile_story_flutter_app/view/logged_in_page.dart';
 import 'package:my_agile_story_flutter_app/view/home_page.dart';
 import 'package:my_agile_story_flutter_app/view/messages.dart';
+import 'package:my_agile_story_flutter_app/view/user_story_cards.dart';
+import 'package:my_agile_story_flutter_app/controller/debug_printing.dart';
+
 
 const String URL_Address = 'https://shrouded-basin-24147.herokuapp.com';
 
@@ -44,6 +47,30 @@ void loginDeveloper(email,password,context) async {
     }
 }
 
+void getProject(thisProject,context) async {
+  String myCurrentLocalTimeStamp = thisProject.timeStampISO;
+  var url = URL_Address + '/get/project';
+  var body = json.encode({
+    'projectId': thisProject.id,
+  });
+  Map<String,String> headers = {
+    'Content-type' : 'application/json',
+    'Accept': 'application/json, text/plain, */*',
+  };
+  http.Response response = await http.post(url, body: body, headers: headers);
+  if (response.statusCode == 200) {
+    var myTempProject = json.decode(response.body);
+    myProjects[myLastSelectedProject]=new Project.fromJson(myTempProject);
+    //print('   ' + myProject.timeStampISO + '   ' + myCurrentLocalTimeStamp);
+    if (myProjects[myLastSelectedProject].timeStampISO != myCurrentLocalTimeStamp){
+      myProjects[myLastSelectedProject].timeStampISO = myCurrentLocalTimeStamp;
+      getUserStorys(myProjects[myLastSelectedProject], context, false);
+    };
+  } else {
+    myApiError = new ApiError.fromJson(json.decode(response.body));
+  }
+}
+
 void getProjects(thisDeveloper,myProjectIndex,context) async {
   var url = URL_Address + '/get/projects';
   var body = json.encode({
@@ -63,7 +90,7 @@ void getProjects(thisDeveloper,myProjectIndex,context) async {
       //printProject (myProjects[i],response);
     }
 
-    //getUserStorys(myProjects[0]);
+    //getUserStorys(myProjects[0],context);
 
     //testUpdateUserStory(myProjects[0]);
      // Navigator.pushNamedAndRemoveUntil(context, MyLoggedInPage.id,(Route<dynamic> route) => false);
@@ -85,7 +112,7 @@ void getProjects(thisDeveloper,myProjectIndex,context) async {
   }
 }
 
-void getUserStorys(thisProject, context) async {
+void getUserStorys(thisProject, context, updateProjectTimeStamp) async {
   var url = URL_Address + '/get/userStorys';
   var body = json.encode({
     'userStoryIds': thisProject.userStoryIds,
@@ -105,18 +132,19 @@ void getUserStorys(thisProject, context) async {
 
     myUserStorys.sort((obj1, obj2) {return obj1.priority - obj2.priority;});
 
-    //Navigator.pushNamedAndRemoveUntil(context, MyLoggedInPage.id,(Route<dynamic> route) => false);
-
-    Route _createRoute() {
-      return PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => MyLoggedInPage(),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return FadeTransition(opacity: animation, child: child);
-        },
-      );
+    if (updateProjectTimeStamp) {
+      editProjectTimeStamp(thisProject,context);
+    }else{
+      Route _createRoute() {
+        return PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => MyLoggedInPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+        );
+      }
+      Navigator.of(context).pushAndRemoveUntil(_createRoute(),(Route<dynamic> PageRouteBuilder) => false);
     }
-
-    Navigator.of(context).pushAndRemoveUntil(_createRoute(),(Route<dynamic> PageRouteBuilder) => false);
 
     //testDeleteUserStory(0);
     //testDeleteProject(0);
@@ -207,7 +235,7 @@ void createNewUserStory(thisProject,thisUserStory,context) async {
     myUserStory = new UserStory.fromJson(myTempUserStory);
     //printUserStory(myUserStory,response);
     thisProject.userStoryIds.add(myUserStory.id);
-    getUserStorys(thisProject,context);
+    getUserStorys(thisProject,context,true);
   } else {
     myApiError = new ApiError.fromJson(json.decode(response.body));
     messagePopup('Error!',Colors.red,myApiError.error,context);
@@ -240,7 +268,7 @@ void editUserStory(thisProject,thisUserStory,context) async {
     var myTempUserStory = json.decode(response.body);
     myUserStory = new UserStory.fromJson(myTempUserStory);
     //printUserStory(myUserStory,response);
-    getUserStorys(thisProject,context);
+    getUserStorys(thisProject,context,true);
   } else {
     myApiError = new ApiError.fromJson(json.decode(response.body));
     messagePopup('Error!',Colors.red,myApiError.error,context);
@@ -265,7 +293,36 @@ void editProject(thisDeveloper,thisProject,myProjectIndex,context) async {
     myProject = new Project.fromJson(myTempProject);
     //printProject(myProject,response);
     getProjects(thisDeveloper, myProjectIndex,context);
-    //TODO  updateStatus("Project " + myProject.name + ", edited successfully");
+  } else {
+    myApiError = new ApiError.fromJson(json.decode(response.body));
+    messagePopup('Error!',Colors.red,myApiError.error,context);
+  }
+}
+
+void editProjectTimeStamp(thisProject,context) async {
+  var url = URL_Address + '/put/project';
+  var body = json.encode({
+    'projectId': thisProject.id,
+    'name': thisProject.name,
+    'description': thisProject.description,
+  });
+  Map<String,String> headers = {
+    'Content-type' : 'application/json',
+    'Accept': 'application/json, text/plain, */*',
+  };
+  http.Response response = await http.post(url, body: body, headers: headers);
+  if (response.statusCode == 200) {
+    var myTempProject = json.decode(response.body);
+    myProject = new Project.fromJson(myTempProject);
+    Route _createRoute() {
+      return PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => MyLoggedInPage(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+      );
+    }
+    Navigator.of(context).pushAndRemoveUntil(_createRoute(),(Route<dynamic> PageRouteBuilder) => false);
   } else {
     myApiError = new ApiError.fromJson(json.decode(response.body));
     messagePopup('Error!',Colors.red,myApiError.error,context);
@@ -294,7 +351,6 @@ void editDeveloper(thisDeveloper, context) async {
     myDeveloper = new Developer.fromJson(myTempDeveloper);
     //printDeveloper(myDeveloper,response);
     Navigator.pushReplacementNamed(context, MyLoggedInPage.id);
-    //TODO  updateStatus("Project " + myProject.name + ", edited successfully");
   } else {
     myApiError = new ApiError.fromJson(json.decode(response.body));
     messagePopup('Error!',Colors.red,myApiError.error,context);
@@ -325,7 +381,7 @@ void deleteUserStory(myUserStoryIndex, context) async {
     http.Response response = await http.post(url, body: body, headers: headers);
 
     if (response.statusCode == 200) {
-      getUserStorys(myProjects[myProjectIndex],context);
+      getUserStorys(myProjects[myProjectIndex],context,true);
     } else {
       myApiError = new ApiError.fromJson(json.decode(response.body));
       messagePopup('Error!',Colors.red,myApiError.error,context);

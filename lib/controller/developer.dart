@@ -6,6 +6,7 @@ class Developer {
   String lastName;
   String bio;
   String role;
+  String timeStampISO;
   List<dynamic> projectIds;
 
   Developer (id,email,password,firstName,lastName,bio,role) {
@@ -27,6 +28,7 @@ class Developer {
     this.bio = json['bio'];
     this.role = json['role'];
     this.projectIds = json['projectIds'];
+    this.timeStampISO = json['timeStampISO'];
   }
 }
 
