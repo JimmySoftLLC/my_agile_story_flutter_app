@@ -27,51 +27,44 @@ void loginDeveloper(email,password,context) async {
   http.Response response = await http.post(url, body: body, headers: headers);
   if (response.statusCode == 200) {
     myDeveloper = new Developer.fromJson(json.decode(response.body));
-    //printDeveloper(myDeveloper,response);
-
-    //testNewDeveloper();
-
-    //testNewProject(myDeveloper);
-
-    //testUpdateProject(myDeveloper,-1);
-
-    //testUpdateDeveloper();
     myLastSelectedProject = -1;
     myUserStorys=[];
-
-    getProjects(myDeveloper,-1,context);
-
+    getProjects(myDeveloper,-1,context,false);
     } else {
       myApiError = new ApiError.fromJson(json.decode(response.body));
       messagePopup('Error!',Colors.red,myApiError.error,context);
     }
 }
 
-void getProject(thisProject,context) async {
-  String myCurrentLocalTimeStamp = thisProject.timeStampISO;
-  var url = URL_Address + '/get/project';
-  var body = json.encode({
-    'projectId': thisProject.id,
-  });
-  Map<String,String> headers = {
-    'Content-type' : 'application/json',
-    'Accept': 'application/json, text/plain, */*',
-  };
-  http.Response response = await http.post(url, body: body, headers: headers);
-  if (response.statusCode == 200) {
-    var myTempProject = json.decode(response.body);
-    myProjects[myLastSelectedProject]=new Project.fromJson(myTempProject);
-    //print('   ' + myProject.timeStampISO + '   ' + myCurrentLocalTimeStamp);
-    if (myProjects[myLastSelectedProject].timeStampISO != myCurrentLocalTimeStamp){
-      myProjects[myLastSelectedProject].timeStampISO = myCurrentLocalTimeStamp;
-      getUserStorys(myProjects[myLastSelectedProject], context, false);
-    };
-  } else {
-    myApiError = new ApiError.fromJson(json.decode(response.body));
-  }
-}
+//void getProject(thisProject,context) async {
+//  String myCurrentLocalTimeStamp = thisProject.timeStampISO;
+//  var url = URL_Address + '/get/project';
+//  var body = json.encode({
+//    'projectId': thisProject.id,
+//  });
+//  Map<String,String> headers = {
+//    'Content-type' : 'application/json',
+//    'Accept': 'application/json, text/plain, */*',
+//  };
+//  http.Response response = await http.post(url, body: body, headers: headers);
+//  if (response.statusCode == 200) {
+//    var myTempProject = json.decode(response.body);
+//    myProjects[myLastSelectedProject]=new Project.fromJson(myTempProject);
+//    if (myProjects[myLastSelectedProject].timeStampISO != myCurrentLocalTimeStamp){
+//      getUserStorys(myProjects[myLastSelectedProject], context, false);
+//    }
+//  } else {
+//    myApiError = new ApiError.fromJson(json.decode(response.body));
+//  }
+//}
 
-void getProjects(thisDeveloper,myProjectIndex,context) async {
+void getProjects(thisDeveloper,myProjectIndex,context,getUserStoriesToo) async {
+  String myCurrentLocalTimeStamp;
+  String myProjectId;
+  if (getUserStoriesToo) {
+    myCurrentLocalTimeStamp = myProjects[myLastSelectedProject].timeStampISO;
+    myProjectId = myProjects[myLastSelectedProject].id;
+  }
   var url = URL_Address + '/get/projects';
   var body = json.encode({
     'projectIds': thisDeveloper.projectIds,
@@ -87,25 +80,28 @@ void getProjects(thisDeveloper,myProjectIndex,context) async {
     myProjects =[];
     for (int i = 0; i < myTempProjects.length; i++) {
       myProjects.add(new Project.fromJson(myTempProjects[i])) ;
-      //printProject (myProjects[i],response);
     }
-
-    //getUserStorys(myProjects[0],context);
-
-    //testUpdateUserStory(myProjects[0]);
-     // Navigator.pushNamedAndRemoveUntil(context, MyLoggedInPage.id,(Route<dynamic> route) => false);
-
-    Route _createRoute() {
-      return PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => MyLoggedInPage(),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return FadeTransition(opacity: animation, child: child);
-        },
-      );
+    if (getUserStoriesToo) {
+      for (int i =0; i < myProjects.length; i++){
+        if(myProjects[i].id == myProjectId){
+          myLastSelectedProject=i;
+          break;
+        }
+      }
+      if (myProjects[myLastSelectedProject].timeStampISO != myCurrentLocalTimeStamp){
+        getUserStorys(myProjects[myLastSelectedProject], context, false);
+      }
+    } else{
+      Route _createRoute() {
+        return PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => MyLoggedInPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+        );
+      }
+      Navigator.of(context).pushAndRemoveUntil(_createRoute(),(Route<dynamic> PageRouteBuilder) => false);
     }
-
-    Navigator.of(context).pushAndRemoveUntil(_createRoute(),(Route<dynamic> PageRouteBuilder) => false);
-
   } else {
     myApiError = new ApiError.fromJson(json.decode(response.body));
     messagePopup('Error!',Colors.red,myApiError.error,context);
@@ -122,16 +118,13 @@ void getUserStorys(thisProject, context, updateProjectTimeStamp) async {
     'Accept': 'application/json, text/plain, */*',
   };
   http.Response response = await http.post(url, body: body, headers: headers);
-
   if (response.statusCode == 200) {
     var myTempUserStorys = json.decode(response.body);
     myUserStorys =[];
     for (int i = 0; i < myTempUserStorys.length; i++) {
       myUserStorys.add(new UserStory.fromJson(myTempUserStorys[i])) ;
     }
-
     myUserStorys.sort((obj1, obj2) {return obj1.priority - obj2.priority;});
-
     if (updateProjectTimeStamp) {
       editProjectTimeStamp(thisProject,context);
     }else{
@@ -145,10 +138,6 @@ void getUserStorys(thisProject, context, updateProjectTimeStamp) async {
       }
       Navigator.of(context).pushAndRemoveUntil(_createRoute(),(Route<dynamic> PageRouteBuilder) => false);
     }
-
-    //testDeleteUserStory(0);
-    //testDeleteProject(0);
-    //printUserStorys(myUserStorys, response);
   } else {
     myApiError = new ApiError.fromJson(json.decode(response.body));
     messagePopup('Error!',Colors.red,myApiError.error,context);
@@ -170,7 +159,6 @@ void createNewDeveloper(thisDeveloper,context) async {
     'Accept': 'application/json, text/plain, */*',
   };
   http.Response response = await http.post(url, body: body, headers: headers);
-
   if (response.statusCode == 200) {
     var myTempDeveloper = json.decode(response.body);
     myDeveloper = new Developer.fromJson(myTempDeveloper);
@@ -194,13 +182,12 @@ void createNewProject(thisDeveloper,thisProject,context) async {
     'Accept': 'application/json, text/plain, */*',
   };
   http.Response response = await http.post(url, body: body, headers: headers);
-
   if (response.statusCode == 200) {
     var myTempDeveloper = json.decode(response.body);
-    myProject = new Project.fromJson(myTempDeveloper);
+    thisProject = new Project.fromJson(myTempDeveloper);
     //printProject(myProject,response);
-    thisDeveloper.projectIds.add(myProject.id);
-    getProjects(myDeveloper,-1,context);
+    thisDeveloper.projectIds.add(thisProject.id);
+    getProjects(myDeveloper,-1,context,false);
     //updateStatus('Project ' +  myProject.name + ', created successfully');
   } else {
     myApiError = new ApiError.fromJson(json.decode(response.body));
@@ -229,12 +216,11 @@ void createNewUserStory(thisProject,thisUserStory,context) async {
     'Accept': 'application/json, text/plain, */*',
   };
   http.Response response = await http.post(url, body: body, headers: headers);
-
   if (response.statusCode == 200) {
     var myTempUserStory = json.decode(response.body);
-    myUserStory = new UserStory.fromJson(myTempUserStory);
+    thisUserStory = new UserStory.fromJson(myTempUserStory);
     //printUserStory(myUserStory,response);
-    thisProject.userStoryIds.add(myUserStory.id);
+    thisProject.userStoryIds.add(thisUserStory.id);
     getUserStorys(thisProject,context,true);
   } else {
     myApiError = new ApiError.fromJson(json.decode(response.body));
@@ -263,10 +249,9 @@ void editUserStory(thisProject,thisUserStory,context) async {
     'Accept': 'application/json, text/plain, */*',
   };
   http.Response response = await http.post(url, body: body, headers: headers);
-
   if (response.statusCode == 200) {
     var myTempUserStory = json.decode(response.body);
-    myUserStory = new UserStory.fromJson(myTempUserStory);
+    thisUserStory = new UserStory.fromJson(myTempUserStory);
     //printUserStory(myUserStory,response);
     getUserStorys(thisProject,context,true);
   } else {
@@ -287,12 +272,11 @@ void editProject(thisDeveloper,thisProject,myProjectIndex,context) async {
     'Accept': 'application/json, text/plain, */*',
   };
   http.Response response = await http.post(url, body: body, headers: headers);
-
   if (response.statusCode == 200) {
     var myTempProject = json.decode(response.body);
-    myProject = new Project.fromJson(myTempProject);
+    thisProject = new Project.fromJson(myTempProject);
     //printProject(myProject,response);
-    getProjects(thisDeveloper, myProjectIndex,context);
+    getProjects(thisDeveloper, myProjectIndex,context,false);
   } else {
     myApiError = new ApiError.fromJson(json.decode(response.body));
     messagePopup('Error!',Colors.red,myApiError.error,context);
@@ -313,7 +297,7 @@ void editProjectTimeStamp(thisProject,context) async {
   http.Response response = await http.post(url, body: body, headers: headers);
   if (response.statusCode == 200) {
     var myTempProject = json.decode(response.body);
-    myProject = new Project.fromJson(myTempProject);
+    myProjects[myLastSelectedProject] = new Project.fromJson(myTempProject);
     Route _createRoute() {
       return PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) => MyLoggedInPage(),
@@ -345,7 +329,6 @@ void editDeveloper(thisDeveloper, context) async {
     'Accept': 'application/json, text/plain, */*',
   };
   http.Response response = await http.post(url, body: body, headers: headers);
-
   if (response.statusCode == 200) {
     var myTempDeveloper = json.decode(response.body);
     myDeveloper = new Developer.fromJson(myTempDeveloper);
@@ -379,7 +362,6 @@ void deleteUserStory(myUserStoryIndex, context) async {
       'Accept': 'application/json, text/plain, */*',
     };
     http.Response response = await http.post(url, body: body, headers: headers);
-
     if (response.statusCode == 200) {
       getUserStorys(myProjects[myProjectIndex],context,true);
     } else {
@@ -412,7 +394,7 @@ void deleteProject(myProjectIndex,context) async {
       };
       http.Response response = await http.post(url, body: body, headers: headers);
       if (response.statusCode == 200) {
-        getProjects(myDeveloper, -1,context);
+        getProjects(myDeveloper, -1,context,false);
       } else {
         myApiError = new ApiError.fromJson(json.decode(response.body));
         messagePopup('Error!',Colors.red,myApiError.error,context);

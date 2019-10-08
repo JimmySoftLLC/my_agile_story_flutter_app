@@ -22,5 +22,4 @@ class Project {
   }
 }
 
-var myProject;
 var myProjects = [];

@@ -67,8 +67,6 @@ void testUpdateProject(thisDeveloper,myProjectIndex,context){
   editProject(thisDeveloper,myUpdateProject,myProjectIndex,context);
 }
 
-//testUpdateDeveloper(myDeveloper);
-
 void testUpdateDeveloper(context){
   Developer myUpdatedDeveloper = new Developer(
       'id',

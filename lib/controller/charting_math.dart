@@ -60,11 +60,12 @@ calculateDataForBurnDownChart() {
     burndown.add(totalProjectPoints.toDouble() - tempDoneSoFar.toDouble());
     tempDoneSoFar += sprints[i];
   }
-  StraightLineFit();
+  straightLineFit();
 }
 
-StraightLineFit() {
+straightLineFit() {
   var mySlopeIntercept = linearRegression(burndown,myXs);
+
   int i = 0;
   burndown =[];
   burndown.add(mySlopeIntercept['slope'] * i + mySlopeIntercept['intercept']);
@@ -79,21 +80,19 @@ StraightLineFit() {
 linearRegression(y,x){
   var lr = {};
   int n = y.length;
-  double sum_x = 0;
-  double sum_y = 0;
-  double sum_xy = 0;
-  double sum_xx = 0;
+  double sumX = 0;
+  double sumY = 0;
+  double sumXY = 0;
+  double sumXX = 0;
 
   for (var i = 0; i < y.length; i++) {
-    sum_x += x[i];
-    sum_y += y[i];
-    sum_xy += (x[i] * y[i]);
-    sum_xx += (x[i] * x[i]);
+    sumX += x[i];
+    sumY += y[i];
+    sumXY += (x[i] * y[i]);
+    sumXX += (x[i] * x[i]);
   }
-
-  lr['slope'] = (n * sum_xy - sum_x * sum_y) / (n*sum_xx - sum_x * sum_x);
-  lr['intercept'] = (sum_y - lr['slope'] * sum_x)/n;
-
+  lr['slope'] = (n * sumXY - sumX * sumY) / (n*sumXX - sumX * sumX);
+  lr['intercept'] = (sumY - lr['slope'] * sumX)/n;
   return lr;
 }
 

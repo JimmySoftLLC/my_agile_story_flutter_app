@@ -4,6 +4,8 @@ import 'package:my_agile_story_flutter_app/controller/user_story.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:my_agile_story_flutter_app/view/logged_in_page.dart';
 
+const double userStoryCardHeight = 130;
+
 List<UserStoryCard> updateUserStoryCards(String selectedPhase) {
   List<Widget> userStoryCards = <UserStoryCard>[];
   String userStoryBody;
@@ -74,7 +76,7 @@ class UserStoryCard extends StatefulWidget {
     @required this.percentDoneValue,
     @required this.percentDoneText,
     @required this.estimate,
-    @required this.sliderVal
+    @required this.sliderVal,
   });
 
   final String userStoryTitle;
@@ -99,7 +101,7 @@ class _UserStoryCardState extends State<UserStoryCard> {
   String _percentDoneText;
   String _estimate;
   int _sliderVal;
-  bool hitState = false;
+  bool _hitState = false;
 
   @override
   void initState() {
@@ -149,29 +151,34 @@ class _UserStoryCardState extends State<UserStoryCard> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Padding(
-                  padding: EdgeInsets.fromLTRB(0, 10, 5, 0),
+                  padding: EdgeInsets.fromLTRB(15, 10, 0, 0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      LinearPercentIndicator(
-                        width: 120.0,
-                        lineHeight: 14.0,
-                        percent: _percentDoneValue,
-                        center: Text(
-                          _percentDoneText,
-                          style: TextStyle(fontSize: 12.0),
+                      Expanded(
+                        flex:8,
+                        child: LinearPercentIndicator(
+                          lineHeight: 14.0,
+                          percent: _percentDoneValue,
+                          center: Text(
+                            _percentDoneText,
+                            style: TextStyle(fontSize: 12.0),
+                          ),
+                          linearStrokeCap: LinearStrokeCap.roundAll,
+                          backgroundColor: Colors.grey,
+                          progressColor: Colors.blue,
                         ),
-                        linearStrokeCap: LinearStrokeCap.roundAll,
-                        backgroundColor: Colors.grey,
-                        progressColor: Colors.blue,
                       ),
                       SizedBox(
                         width: 2.0,
                       ),
-                      Text(
-                        _estimate,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 12.0),
+                      Expanded(
+                        flex: 2,
+                        child: Text(
+                          _estimate,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 12.0),
+                        ),
                       ),
                     ],
                   ),
@@ -201,33 +208,28 @@ class _UserStoryCardState extends State<UserStoryCard> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Slider(
-                        value: _sliderVal.toDouble(),
-                        min: 1.0,
-                        max: 10.0,
-                        divisions: 10,
-                        activeColor: Colors.blue,
-                        inactiveColor: Colors.black,
-                        label: _sliderVal.toString(),
-                        onChanged: (double changedValue) {
-                          setState(() {
-                            _sliderVal = changedValue.round();
-                          });
-                        },
-                        onChangeEnd: (double endValue) {
-                          if (!hitState) {
-                            hitState=true;
-                            var endValueToSend = endValue.round();
-                            print ('end state ' + endValueToSend.toString());
-                            changeUserStoryPriorityUsingSlider(_index, endValueToSend.toInt(),context);
-                          }
-                        },
-                      )
-                    ],
+                  padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
+                  child: Slider(
+                    value: _sliderVal.toDouble(),
+                    min: 1.0,
+                    max: 10.0,
+                    divisions: 10,
+                    activeColor: Colors.blue,
+                    inactiveColor: Colors.black,
+                    label: _sliderVal.toString(),
+                    onChanged: (double changedValue) {
+                      setState(() {
+                        _sliderVal = changedValue.round();
+                      });
+                    },
+                    onChangeEnd: (double endValue) {
+                      if (!_hitState) {
+                        _hitState=true;
+                        var endValueToSend = endValue.round();
+                        print ('end state ' + endValueToSend.toString());
+                        changeUserStoryPriorityUsingSlider(_index, endValueToSend.toInt(),context);
+                      }
+                    },
                   ),
                 ),
               ],
@@ -235,7 +237,7 @@ class _UserStoryCardState extends State<UserStoryCard> {
           ),
         ],
       ),
-      height: 130,
+      height: userStoryCardHeight,
       margin: EdgeInsets.all(5.0),
       decoration: BoxDecoration(
         color: Colors.black12,

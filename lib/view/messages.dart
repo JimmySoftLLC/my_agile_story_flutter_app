@@ -3,12 +3,10 @@ import 'package:my_agile_story_flutter_app/controller/api_requests.dart';
 import 'package:my_agile_story_flutter_app/view/logged_in_page.dart';
 
 void messagePopup(String title, Color titleColor, String message, context) {
-  // flutter defined function
   showDialog(
     context: context,
-    barrierDismissible: false, // user must tap button for close dialog!,
+    barrierDismissible: false,
     builder: (BuildContext context) {
-      // return object of type Dialog
       return AlertDialog(
         title: Text(
           title,
@@ -34,12 +32,10 @@ void messagePopup(String title, Color titleColor, String message, context) {
 }
 
 void messagePopupNoDismiss(String title, Color titleColor, String message, context) {
-  // flutter defined function
   showDialog(
     context: context,
-    barrierDismissible: false, // user must tap button for close dialog!,
+    barrierDismissible: false,
     builder: (BuildContext context) {
-      // return object of type Dialog
       return AlertDialog(
         title: Text(
           'Updating data',
@@ -54,12 +50,10 @@ void messagePopupNoDismiss(String title, Color titleColor, String message, conte
 }
 
 void deleteWarningPopup(String itemType, String itemName, context) {
-  // flutter defined function
   showDialog(
     context: context,
-    barrierDismissible: false, // user must tap button for close dialog!,
+    barrierDismissible: false,
     builder: (BuildContext context) {
-      // return object of type Dialog
       return AlertDialog(
         title: Text('Delete Warning !', style: TextStyle(color: Colors.red)),
         content: myRichText(itemType, itemName),
@@ -100,8 +94,6 @@ void deleteWarningPopup(String itemType, String itemName, context) {
 RichText myRichText(String itemType, String itemName) {
   var text = new RichText(
     text: new TextSpan(
-      // Note: Styles for TextSpans must be explicitly defined.
-      // Child text spans will inherit styles from parent
       style: new TextStyle(
         fontSize: 14.0,
         color: Colors.black,

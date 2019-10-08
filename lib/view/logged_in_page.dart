@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_agile_story_flutter_app/controller/api_requests.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:my_agile_story_flutter_app/controller/developer.dart';
 import 'package:my_agile_story_flutter_app/controller/user_story.dart';
 import 'package:my_agile_story_flutter_app/view/home_page.dart';
 import 'package:my_agile_story_flutter_app/view/new_project.dart';
@@ -13,11 +14,12 @@ import 'package:my_agile_story_flutter_app/view/messages.dart';
 import 'package:my_agile_story_flutter_app/view/charting_view.dart';
 import 'package:my_agile_story_flutter_app/view/user_story_cards.dart';
 import 'dart:async';
+import 'package:flutter/scheduler.dart';
 
 String myLastSelectedPhase = '0';
 int myLastSelectedProject = -1;
 int myLastSelectedUserStory = -1;
-String chartTitle = '';
+var myLastScrollPosition = [0.0,0.0,0.0,0.0];
 
 class MyLoggedInPage extends StatefulWidget {
   static const String id = '/MyLoggedInPage';
@@ -25,12 +27,6 @@ class MyLoggedInPage extends StatefulWidget {
       context.ancestorStateOfType(const TypeMatcher<_MyLoggedInPageState>());
   @override
   _MyLoggedInPageState createState() => _MyLoggedInPageState();
-
-  @override
-  Widget buildTransitions(BuildContext context, Animation<double> animation,
-      Animation<double> secondaryAnimation, Widget child) {
-    return child;
-  }
 }
 
 class _MyLoggedInPageState extends State<MyLoggedInPage> {
@@ -38,34 +34,42 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
   List<Widget> userStoryCardsDoing = <UserStoryCard>[];
   List<Widget> userStoryCardsVerify = <UserStoryCard>[];
   List<Widget> userStoryCardsDone = <UserStoryCard>[];
-  Timer timer;
   ProjectPopupMenu _selectedChoices;
+  Timer needsUpdateTimer;
+  ScrollController _scrollController0;
+  ScrollController _scrollController1;
+  ScrollController _scrollController2;
+  ScrollController _scrollController3;
+  String chartTitle;
 
   void _select(ProjectPopupMenu choice) {
     setState(() {
       _selectedChoices = choice;
       myLastSelectedProject = choice.id;
-      chartTitle = 'Burndown for: ' + myProjects[myLastSelectedProject].name;
       messagePopupNoDismiss('',Colors.black,'Getting project please wait',context);
       getUserStorys(myProjects[choice.id], context, false);
     });
   }
 
   void editUserStoryInContext() {
+    updateScrollPositions();
     Navigator.pushReplacementNamed(context, EditUserStory.id);
   }
 
   void moveUserStoryToNextPhaseInContext() {
+    updateScrollPositions();
     messagePopupNoDismiss('',Colors.black,'Moving user story to next phase please wait',context);
     editUserStory(myProjects[myLastSelectedProject],
         myUserStorys[myLastSelectedUserStory], context);
   }
 
   void deleteWarningPopupInContext(String itemType, String itemName, context) {
+    updateScrollPositions();
     deleteWarningPopup( itemType,  itemName, context);
   }
 
   void changeUserStoryPriorityUsingSliderInContext() {
+    updateScrollPositions();
     messagePopupNoDismiss('',Colors.black,'Reordering user stories please wait',context);
     editUserStory(myProjects[myLastSelectedProject],
         myUserStorys[myLastSelectedUserStory], context);
@@ -73,12 +77,26 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
 
   void updateProjectInContext(){
     if(myLastSelectedProject != -1) {
-      getProject(myProjects[myLastSelectedProject],context);
+      updateScrollPositions();
+      getProjects(myDeveloper,myLastSelectedProject,context,true);
+    }
+  }
+
+  void updateScrollPositions() {
+    if (myLastSelectedProject >= 0) {
+      if (_scrollController0.hasClients) {myLastScrollPosition[0]=_scrollController0.offset;}
+      if (_scrollController1.hasClients) {myLastScrollPosition[1]=_scrollController1.offset;}
+      if (_scrollController2.hasClients) {myLastScrollPosition[2]=_scrollController2.offset;}
+      if (_scrollController3.hasClients) {myLastScrollPosition[3]=_scrollController3.offset;}
     }
   }
 
   @override
   void initState() {
+    _scrollController0 = new ScrollController();
+    _scrollController1 = new ScrollController();
+    _scrollController2 = new ScrollController();
+    _scrollController3 = new ScrollController();
     super.initState();
     _selectedChoices = null;
     updateProjectChoices();
@@ -95,10 +113,23 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
       userStoryCardsDoing = updateUserStoryCards('1');
       userStoryCardsVerify = updateUserStoryCards('2');
       userStoryCardsDone = updateUserStoryCards('3');
+      chartTitle = myProjects[myLastSelectedProject].name;
+    }else{
+      chartTitle='';
     }
-    timer = Timer.periodic(Duration(seconds: 5), (Timer t) {
+    needsUpdateTimer = Timer.periodic(Duration(seconds: 5), (Timer t) {
       updateProjectInContext();
     });
+    if (SchedulerBinding.instance.schedulerPhase == SchedulerPhase.persistentCallbacks) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        if (myLastSelectedProject >= 0) {
+          if (_scrollController0.hasClients) {_scrollController0.jumpTo(myLastScrollPosition[0].toDouble());}
+          if (_scrollController1.hasClients) {_scrollController1.jumpTo(myLastScrollPosition[1].toDouble());}
+          if (_scrollController2.hasClients) {_scrollController2.jumpTo(myLastScrollPosition[2].toDouble());}
+          if (_scrollController3.hasClients) {_scrollController3.jumpTo(myLastScrollPosition[3].toDouble());}
+        }
+      });
+    }
   }
 
   @override
@@ -129,37 +160,28 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
           ),
           body: TabBarView(children: [
             ListView(
+              controller: _scrollController0,
               padding: const EdgeInsets.all(8),
               children: userStoryCardsToDo,
             ),
             ListView(
+              controller: _scrollController1,
               padding: const EdgeInsets.all(8),
               children: userStoryCardsDoing,
             ),
             ListView(
+              controller: _scrollController2,
               padding: const EdgeInsets.all(8),
               children: userStoryCardsVerify,
             ),
             ListView(
+              controller: _scrollController3,
               padding: const EdgeInsets.all(8),
               children: userStoryCardsDone,
             ),
             Padding(
               padding: EdgeInsets.all(8.0),
-              child: Container(
-                child: Center(
-                  child: Column(
-                    children: <Widget>[
-                      Text(
-                        chartTitle,
-                        style: TextStyle(
-                            fontSize: 17.0, fontWeight: FontWeight.bold),
-                      ),
-                      Expanded(child: BurnDownChart.withData())
-                    ],
-                  ),
-                ),
-              ),
+              child: BurnDownChart(createBurnDownDataSet(),true,chartTitle)
             ),
           ]),
           bottomNavigationBar: BottomAppBar(
@@ -261,7 +283,7 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
 
   @override
   void deactivate() {
-    timer?.cancel();
+    needsUpdateTimer?.cancel();
     super.deactivate();
   }
 }

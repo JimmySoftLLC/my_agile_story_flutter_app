@@ -48,5 +48,4 @@ class UserStory {
   }
 }
 
-var myUserStory;
 var myUserStorys = [];
