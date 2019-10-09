@@ -20,6 +20,15 @@ class Project {
     this.userStoryIds = json['userStoryIds'];
     this.timeStampISO = json['timeStampISO'];
   }
+
+  Project.fromJsonNested(Map json) {
+    this.id = json['project']['_id'];
+    this.name = json['project']['name'];
+    this.description = json['project']['description'];
+    this.developerIds = json['project']['developerIds'];
+    this.userStoryIds = json['project']['userStoryIds'];
+    this.timeStampISO = json['project']['timeStampISO'];
+  }
 }
 
 var myProjects = [];

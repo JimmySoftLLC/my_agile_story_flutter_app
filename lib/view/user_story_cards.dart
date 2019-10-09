@@ -226,7 +226,6 @@ class _UserStoryCardState extends State<UserStoryCard> {
                       if (!_hitState) {
                         _hitState=true;
                         var endValueToSend = endValue.round();
-                        print ('end state ' + endValueToSend.toString());
                         changeUserStoryPriorityUsingSlider(_index, endValueToSend.toInt(),context);
                       }
                     },

@@ -29,7 +29,7 @@ class MyLoggedInPage extends StatefulWidget {
   _MyLoggedInPageState createState() => _MyLoggedInPageState();
 }
 
-class _MyLoggedInPageState extends State<MyLoggedInPage> {
+class _MyLoggedInPageState extends State<MyLoggedInPage> with WidgetsBindingObserver{
   List<Widget> userStoryCardsToDo = <UserStoryCard>[];
   List<Widget> userStoryCardsDoing = <UserStoryCard>[];
   List<Widget> userStoryCardsVerify = <UserStoryCard>[];
@@ -42,12 +42,20 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
   ScrollController _scrollController3;
   String chartTitle;
 
+  AppLifecycleState _notification;
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    setState(() {
+      _notification = state;
+    });
+  }
+
   void _select(ProjectPopupMenu choice) {
     setState(() {
       _selectedChoices = choice;
       myLastSelectedProject = choice.id;
       messagePopupNoDismiss('',Colors.black,'Getting project please wait',context);
-      getUserStorys(myProjects[choice.id], context, false);
+      getUserStorys(myProjects[choice.id], context);
     });
   }
 
@@ -76,7 +84,7 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
   }
 
   void updateProjectInContext(){
-    if(myLastSelectedProject != -1) {
+    if(myLastSelectedProject != -1 && _notification.toString() != 'AppLifecycleState.paused') {
       updateScrollPositions();
       getProjects(myDeveloper,myLastSelectedProject,context,true);
     }
@@ -93,11 +101,12 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
 
   @override
   void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _scrollController0 = new ScrollController();
     _scrollController1 = new ScrollController();
     _scrollController2 = new ScrollController();
     _scrollController3 = new ScrollController();
-    super.initState();
     _selectedChoices = null;
     updateProjectChoices();
     if (myLastSelectedProject > myProjects.length - 1) {
@@ -283,6 +292,7 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> {
 
   @override
   void deactivate() {
+    WidgetsBinding.instance.removeObserver(this);
     needsUpdateTimer?.cancel();
     super.deactivate();
   }

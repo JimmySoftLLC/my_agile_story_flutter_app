@@ -11,7 +11,6 @@ import 'package:my_agile_story_flutter_app/view/messages.dart';
 import 'package:my_agile_story_flutter_app/view/user_story_cards.dart';
 import 'package:my_agile_story_flutter_app/controller/debug_printing.dart';
 
-
 const String URL_Address = 'https://shrouded-basin-24147.herokuapp.com';
 
 void loginDeveloper(email,password,context) async {
@@ -29,41 +28,17 @@ void loginDeveloper(email,password,context) async {
     myDeveloper = new Developer.fromJson(json.decode(response.body));
     myLastSelectedProject = -1;
     myUserStorys=[];
-    getProjects(myDeveloper,-1,context,false);
+    getProjects(myDeveloper,-1,context,true);
     } else {
       myApiError = new ApiError.fromJson(json.decode(response.body));
       messagePopup('Error!',Colors.red,myApiError.error,context);
     }
 }
 
-//void getProject(thisProject,context) async {
-//  String myCurrentLocalTimeStamp = thisProject.timeStampISO;
-//  var url = URL_Address + '/get/project';
-//  var body = json.encode({
-//    'projectId': thisProject.id,
-//  });
-//  Map<String,String> headers = {
-//    'Content-type' : 'application/json',
-//    'Accept': 'application/json, text/plain, */*',
-//  };
-//  http.Response response = await http.post(url, body: body, headers: headers);
-//  if (response.statusCode == 200) {
-//    var myTempProject = json.decode(response.body);
-//    myProjects[myLastSelectedProject]=new Project.fromJson(myTempProject);
-//    if (myProjects[myLastSelectedProject].timeStampISO != myCurrentLocalTimeStamp){
-//      getUserStorys(myProjects[myLastSelectedProject], context, false);
-//    }
-//  } else {
-//    myApiError = new ApiError.fromJson(json.decode(response.body));
-//  }
-//}
-
-void getProjects(thisDeveloper,myProjectIndex,context,getUserStoriesToo) async {
+void getProjects(thisDeveloper, myProjectIndex, context, checkingIfUpdateIsNeeded) async {
   String myCurrentLocalTimeStamp;
-  String myProjectId;
-  if (getUserStoriesToo) {
-    myCurrentLocalTimeStamp = myProjects[myLastSelectedProject].timeStampISO;
-    myProjectId = myProjects[myLastSelectedProject].id;
+  if (checkingIfUpdateIsNeeded && myProjectIndex != -1){
+    myCurrentLocalTimeStamp = myProjects[myProjectIndex].timeStampISO;
   }
   var url = URL_Address + '/get/projects';
   var body = json.encode({
@@ -81,17 +56,11 @@ void getProjects(thisDeveloper,myProjectIndex,context,getUserStoriesToo) async {
     for (int i = 0; i < myTempProjects.length; i++) {
       myProjects.add(new Project.fromJson(myTempProjects[i])) ;
     }
-    if (getUserStoriesToo) {
-      for (int i =0; i < myProjects.length; i++){
-        if(myProjects[i].id == myProjectId){
-          myLastSelectedProject=i;
-          break;
-        }
+    if (checkingIfUpdateIsNeeded && myProjectIndex != -1) {
+      if(myCurrentLocalTimeStamp != myProjects[myProjectIndex].timeStampISO){
+        getUserStorys(myProjects[myProjectIndex],context);
       }
-      if (myProjects[myLastSelectedProject].timeStampISO != myCurrentLocalTimeStamp){
-        getUserStorys(myProjects[myLastSelectedProject], context, false);
-      }
-    } else{
+    }else{
       Route _createRoute() {
         return PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) => MyLoggedInPage(),
@@ -108,7 +77,7 @@ void getProjects(thisDeveloper,myProjectIndex,context,getUserStoriesToo) async {
   }
 }
 
-void getUserStorys(thisProject, context, updateProjectTimeStamp) async {
+void getUserStorys(thisProject, context) async {
   var url = URL_Address + '/get/userStorys';
   var body = json.encode({
     'userStoryIds': thisProject.userStoryIds,
@@ -125,19 +94,15 @@ void getUserStorys(thisProject, context, updateProjectTimeStamp) async {
       myUserStorys.add(new UserStory.fromJson(myTempUserStorys[i])) ;
     }
     myUserStorys.sort((obj1, obj2) {return obj1.priority - obj2.priority;});
-    if (updateProjectTimeStamp) {
-      editProjectTimeStamp(thisProject,context);
-    }else{
-      Route _createRoute() {
-        return PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => MyLoggedInPage(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(opacity: animation, child: child);
-          },
-        );
-      }
-      Navigator.of(context).pushAndRemoveUntil(_createRoute(),(Route<dynamic> PageRouteBuilder) => false);
+    Route _createRoute() {
+      return PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => MyLoggedInPage(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+      );
     }
+    Navigator.of(context).pushAndRemoveUntil(_createRoute(),(Route<dynamic> PageRouteBuilder) => false);
   } else {
     myApiError = new ApiError.fromJson(json.decode(response.body));
     messagePopup('Error!',Colors.red,myApiError.error,context);
@@ -188,7 +153,6 @@ void createNewProject(thisDeveloper,thisProject,context) async {
     //printProject(myProject,response);
     thisDeveloper.projectIds.add(thisProject.id);
     getProjects(myDeveloper,-1,context,false);
-    //updateStatus('Project ' +  myProject.name + ', created successfully');
   } else {
     myApiError = new ApiError.fromJson(json.decode(response.body));
     messagePopup('Error!',Colors.red,myApiError.error,context);
@@ -196,7 +160,7 @@ void createNewProject(thisDeveloper,thisProject,context) async {
 }
 
 void createNewUserStory(thisProject,thisUserStory,context) async {
-  var url = URL_Address + '/project/userStory';
+  var url = URL_Address + '/project/userStoryWithProjectId';
   var body = json.encode({
     'projectId': thisProject.id,
     'userStoryTitle': thisUserStory.userStoryTitle,
@@ -218,10 +182,9 @@ void createNewUserStory(thisProject,thisUserStory,context) async {
   http.Response response = await http.post(url, body: body, headers: headers);
   if (response.statusCode == 200) {
     var myTempUserStory = json.decode(response.body);
-    thisUserStory = new UserStory.fromJson(myTempUserStory);
-    //printUserStory(myUserStory,response);
-    thisProject.userStoryIds.add(thisUserStory.id);
-    getUserStorys(thisProject,context,true);
+    thisUserStory = new UserStory.fromJsonNested(myTempUserStory);
+    myProjects[myLastSelectedProject] = new Project.fromJsonNested(myTempUserStory);
+    getUserStorys(myProjects[myLastSelectedProject],context);
   } else {
     myApiError = new ApiError.fromJson(json.decode(response.body));
     messagePopup('Error!',Colors.red,myApiError.error,context);
@@ -229,8 +192,9 @@ void createNewUserStory(thisProject,thisUserStory,context) async {
 }
 
 void editUserStory(thisProject,thisUserStory,context) async {
-  var url = URL_Address + '/put/userStory';
+  var url = URL_Address + '/put/userStoryWithProjectId';
   var body = json.encode({
+    'projectId': thisProject.id,
     'userStoryId': thisUserStory.id,
     'userStoryTitle': thisUserStory.userStoryTitle,
     'userRole': thisUserStory.userRole,
@@ -251,9 +215,9 @@ void editUserStory(thisProject,thisUserStory,context) async {
   http.Response response = await http.post(url, body: body, headers: headers);
   if (response.statusCode == 200) {
     var myTempUserStory = json.decode(response.body);
-    thisUserStory = new UserStory.fromJson(myTempUserStory);
-    //printUserStory(myUserStory,response);
-    getUserStorys(thisProject,context,true);
+    thisUserStory = new UserStory.fromJsonNested(myTempUserStory);
+    myProjects[myLastSelectedProject] = new Project.fromJsonNested(myTempUserStory);
+    getUserStorys(myProjects[myLastSelectedProject],context);
   } else {
     myApiError = new ApiError.fromJson(json.decode(response.body));
     messagePopup('Error!',Colors.red,myApiError.error,context);
@@ -275,38 +239,7 @@ void editProject(thisDeveloper,thisProject,myProjectIndex,context) async {
   if (response.statusCode == 200) {
     var myTempProject = json.decode(response.body);
     thisProject = new Project.fromJson(myTempProject);
-    //printProject(myProject,response);
-    getProjects(thisDeveloper, myProjectIndex,context,false);
-  } else {
-    myApiError = new ApiError.fromJson(json.decode(response.body));
-    messagePopup('Error!',Colors.red,myApiError.error,context);
-  }
-}
-
-void editProjectTimeStamp(thisProject,context) async {
-  var url = URL_Address + '/put/project';
-  var body = json.encode({
-    'projectId': thisProject.id,
-    'name': thisProject.name,
-    'description': thisProject.description,
-  });
-  Map<String,String> headers = {
-    'Content-type' : 'application/json',
-    'Accept': 'application/json, text/plain, */*',
-  };
-  http.Response response = await http.post(url, body: body, headers: headers);
-  if (response.statusCode == 200) {
-    var myTempProject = json.decode(response.body);
-    myProjects[myLastSelectedProject] = new Project.fromJson(myTempProject);
-    Route _createRoute() {
-      return PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => MyLoggedInPage(),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return FadeTransition(opacity: animation, child: child);
-        },
-      );
-    }
-    Navigator.of(context).pushAndRemoveUntil(_createRoute(),(Route<dynamic> PageRouteBuilder) => false);
+    getProjects(thisDeveloper, myProjectIndex,context,true);
   } else {
     myApiError = new ApiError.fromJson(json.decode(response.body));
     messagePopup('Error!',Colors.red,myApiError.error,context);
@@ -332,7 +265,6 @@ void editDeveloper(thisDeveloper, context) async {
   if (response.statusCode == 200) {
     var myTempDeveloper = json.decode(response.body);
     myDeveloper = new Developer.fromJson(myTempDeveloper);
-    //printDeveloper(myDeveloper,response);
     Navigator.pushReplacementNamed(context, MyLoggedInPage.id);
   } else {
     myApiError = new ApiError.fromJson(json.decode(response.body));
@@ -363,7 +295,7 @@ void deleteUserStory(myUserStoryIndex, context) async {
     };
     http.Response response = await http.post(url, body: body, headers: headers);
     if (response.statusCode == 200) {
-      getUserStorys(myProjects[myProjectIndex],context,true);
+      getUserStorys(myProjects[myProjectIndex],context);
     } else {
       myApiError = new ApiError.fromJson(json.decode(response.body));
       messagePopup('Error!',Colors.red,myApiError.error,context);
@@ -394,7 +326,7 @@ void deleteProject(myProjectIndex,context) async {
       };
       http.Response response = await http.post(url, body: body, headers: headers);
       if (response.statusCode == 200) {
-        getProjects(myDeveloper, -1,context,false);
+        getProjects(myDeveloper, -1,context,true);
       } else {
         myApiError = new ApiError.fromJson(json.decode(response.body));
         messagePopup('Error!',Colors.red,myApiError.error,context);

@@ -46,6 +46,23 @@ class UserStory {
     this.projectId = json['projectId'];
     this.timeStampISO = json['timeStampISO'];
   }
+
+  UserStory.fromJsonNested(Map json) {
+    this.id = json['userStory']['_id'];
+    this.userStoryTitle = json['userStory']['userStoryTitle'];
+    this.userRole = json['userStory']['userRole'];
+    this.userBenefit = json['userStory']['userBenefit'];
+    this.acceptanceCriteria = json['userStory']['acceptanceCriteria'];
+    this.conversation = json['userStory']['conversation'];
+    this.estimate = json['userStory']['estimate'];
+    this.userWant = json['userStory']['userWant'];
+    this.phase = json['userStory']['phase'];
+    this.percentDone = json['userStory']['percentDone'];
+    this.priority = json['userStory']['priority'];
+    this.sprint = json['userStory']['sprint'];
+    this.projectId = json['userStory']['projectId'];
+    this.timeStampISO = json['userStory']['timeStampISO'];
+  }
 }
 
 var myUserStorys = [];
