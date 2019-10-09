@@ -30,6 +30,18 @@ class Developer {
     this.projectIds = json['projectIds'];
     this.timeStampISO = json['timeStampISO'];
   }
+
+  Developer.fromJsonNested(Map json) {
+    this.id = json['developer']['_id'];
+    this.email = json['developer']['email'];
+    this.password = json['developer']['password'];
+    this.firstName = json['developer']['firstName'];
+    this.lastName = json['developer']['lastName'];
+    this.bio = json['developer']['bio'];
+    this.role = json['developer']['role'];
+    this.projectIds = json['developer']['projectIds'];
+    this.timeStampISO = json['developer']['timeStampISO'];
+  }
 }
 
 var myDeveloper;

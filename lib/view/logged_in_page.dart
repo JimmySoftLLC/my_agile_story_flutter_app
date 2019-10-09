@@ -199,7 +199,7 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> with WidgetsBindingObse
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 SizedBox(
-                  width: 30,
+                  width: 40,
                   child: PopupMenuButton<ProjectPopupMenu>(
                     icon: Icon(FontAwesomeIcons.ellipsisV),
                     elevation: 3.2,
