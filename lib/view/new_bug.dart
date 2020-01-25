@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:my_agile_story_flutter_app/controller/project.dart';
 import 'package:my_agile_story_flutter_app/view/logged_in_page.dart';
-import 'package:my_agile_story_flutter_app/controller/user_story_api.dart';
-import 'package:my_agile_story_flutter_app/controller/user_story.dart';
+import 'package:my_agile_story_flutter_app/controller/bug_api.dart';
+import 'package:my_agile_story_flutter_app/controller/bug.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 
-class NewUserStory extends StatefulWidget {
-  static const String id ='/NewUserStory';
+class NewBug extends StatefulWidget {
+  static const String id ='/NewBug';
   @override
-  _NewUserStoryState createState() => _NewUserStoryState();
+  _NewBugState createState() => _NewBugState();
 }
 
-class _NewUserStoryState extends State<NewUserStory> {
+class _NewBugState extends State<NewBug> {
   String myText = '';
   double myRadius = 14.0;
-  UserStory myNewUserStory = new UserStory('', '', '', '', '', '', '', 0, '0', 0, 0, 0, '');
+  Bug myNewBug = new Bug('', '', '', '', '', '', '', 0, '0', 0, 0, 0, '');
 
   int myRadioValue = 0;
 
@@ -24,8 +24,8 @@ class _NewUserStoryState extends State<NewUserStory> {
       myText = 'Creating user story user please wait.';
     });
     if (myLastSelectedProject >= 0 && myLastSelectedProject < myProjects.length){
-      myLastSelectedPhase = myNewUserStory.phase;
-      createNewUserStory(myProjects[myLastSelectedProject], myNewUserStory, context);
+      myLastSelectedPhase = myNewBug.phase;
+      createNewBug(myProjects[myLastSelectedProject], myNewBug, context);
     }
   }
 
@@ -33,7 +33,7 @@ class _NewUserStoryState extends State<NewUserStory> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create New User Story',style: TextStyle(fontSize: 17,)),
+        title: Text('Create New Bug',style: TextStyle(fontSize: 17,)),
         backgroundColor: Colors.blue,
         actions: <Widget>[
           // overflow menu
@@ -67,10 +67,10 @@ class _NewUserStoryState extends State<NewUserStory> {
               TextField(
                 //controller: TextEditingController()..text = '',
                 onChanged: (value) {
-                  myNewUserStory.userStoryTitle = value;
+                  myNewBug.bugTitle = value;
                 },
                 decoration: InputDecoration(
-                  hintText: 'User Story title',
+                  hintText: 'Bug title',
                   contentPadding:
                   EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
                   border: OutlineInputBorder(
@@ -91,128 +91,30 @@ class _NewUserStoryState extends State<NewUserStory> {
               SizedBox(
                 height: 8.0,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Expanded(
-                    flex: 2,
-                    child: Text(
-                      'As a',
-                      textAlign: TextAlign.left,
-                    ),
+              TextField(
+                maxLines: 4,
+                //controller: TextEditingController()..text = '',
+                onChanged: (value) {
+                  myNewBug.acceptanceCriteria = value;
+                },
+                decoration: InputDecoration(
+                  hintText: 'Summary',
+                  contentPadding:
+                  EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(myRadius)),
                   ),
-                  Expanded(
-                    flex: 10,
-                    child: TextField(
-                      //controller: TextEditingController()..text = 'flutter@anywhere.com',
-                      onChanged: (value) {
-                        myNewUserStory.userRole = value;
-                      },
-                      decoration: InputDecoration(
-                        hintText: 'role',
-                        contentPadding:
-                        EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(myRadius)),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide:
-                          BorderSide(color: Colors.lightBlueAccent, width: 1.0),
-                          borderRadius: BorderRadius.all(Radius.circular(myRadius)),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide:
-                          BorderSide(color: Colors.lightBlueAccent, width: 2.0),
-                          borderRadius: BorderRadius.all(Radius.circular(myRadius)),
-                        ),
-                      ),
-                    ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide:
+                    BorderSide(color: Colors.lightBlueAccent, width: 1.0),
+                    borderRadius: BorderRadius.all(Radius.circular(myRadius)),
                   ),
-                ],
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Expanded(
-                    flex: 2,
-                    child: Text(
-                      ', I want',
-                      textAlign: TextAlign.left,
-                    ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide:
+                    BorderSide(color: Colors.lightBlueAccent, width: 2.0),
+                    borderRadius: BorderRadius.all(Radius.circular(myRadius)),
                   ),
-                  Expanded(
-                    flex: 10,
-                    child: TextField(
-                      //controller: TextEditingController()..text = 'flutter@anywhere.com',
-                      onChanged: (value) {
-                        myNewUserStory.userWant = value;
-                      },
-                      decoration: InputDecoration(
-                        hintText: 'goal',
-                        contentPadding:
-                        EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(myRadius)),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide:
-                          BorderSide(color: Colors.lightBlueAccent, width: 1.0),
-                          borderRadius: BorderRadius.all(Radius.circular(myRadius)),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide:
-                          BorderSide(color: Colors.lightBlueAccent, width: 2.0),
-                          borderRadius: BorderRadius.all(Radius.circular(myRadius)),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Expanded(
-                    flex: 2,
-                    child: Text(
-                      'so that',
-                      textAlign: TextAlign.left,
-                    ),
-                  ),
-                  Expanded(
-                    flex: 10,
-                    child: TextField(
-                      //controller: TextEditingController()..text = 'flutter@anywhere.com',
-                      onChanged: (value) {
-                        myNewUserStory.userBenefit = value;
-                      },
-                      decoration: InputDecoration(
-                        hintText: 'reason',
-                        contentPadding:
-                        EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(myRadius)),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide:
-                          BorderSide(color: Colors.lightBlueAccent, width: 1.0),
-                          borderRadius: BorderRadius.all(Radius.circular(myRadius)),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide:
-                          BorderSide(color: Colors.lightBlueAccent, width: 2.0),
-                          borderRadius: BorderRadius.all(Radius.circular(myRadius)),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
               SizedBox(
                 height: 8.0,
@@ -221,38 +123,122 @@ class _NewUserStoryState extends State<NewUserStory> {
                 maxLines: 4,
                 //controller: TextEditingController()..text = '',
                 onChanged: (value) {
-                  myNewUserStory.acceptanceCriteria = value;
+                  myNewBug.acceptanceCriteria = value;
+                },
+                decoration: InputDecoration(
+                  hintText: 'Steps to reproduce',
+                  contentPadding:
+                  EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(myRadius)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide:
+                    BorderSide(color: Colors.lightBlueAccent, width: 1.0),
+                    borderRadius: BorderRadius.all(Radius.circular(myRadius)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide:
+                    BorderSide(color: Colors.lightBlueAccent, width: 2.0),
+                    borderRadius: BorderRadius.all(Radius.circular(myRadius)),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 8.0,
+              ),
+              TextField(
+                maxLines: 4,
+                //controller: TextEditingController()..text = '',
+                onChanged: (value) {
+                  myNewBug.acceptanceCriteria = value;
+                },
+                decoration: InputDecoration(
+                  hintText: 'Expected results',
+                  contentPadding:
+                  EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(myRadius)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide:
+                    BorderSide(color: Colors.lightBlueAccent, width: 1.0),
+                    borderRadius: BorderRadius.all(Radius.circular(myRadius)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide:
+                    BorderSide(color: Colors.lightBlueAccent, width: 2.0),
+                    borderRadius: BorderRadius.all(Radius.circular(myRadius)),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 8.0,
+              ),
+              TextField(
+                maxLines: 4,
+                //controller: TextEditingController()..text = '',
+                onChanged: (value) {
+                  myNewBug.acceptanceCriteria = value;
+                },
+                decoration: InputDecoration(
+                  hintText: 'Actual results',
+                  contentPadding:
+                  EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(myRadius)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide:
+                    BorderSide(color: Colors.lightBlueAccent, width: 1.0),
+                    borderRadius: BorderRadius.all(Radius.circular(myRadius)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide:
+                    BorderSide(color: Colors.lightBlueAccent, width: 2.0),
+                    borderRadius: BorderRadius.all(Radius.circular(myRadius)),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 8.0,
+              ),
+              TextField(
+                maxLines: 4,
+                //controller: TextEditingController()..text = '',
+                onChanged: (value) {
+                  myNewBug.acceptanceCriteria = value;
+                },
+                decoration: InputDecoration(
+                  hintText: 'Resolution',
+                  contentPadding:
+                  EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(myRadius)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide:
+                    BorderSide(color: Colors.lightBlueAccent, width: 1.0),
+                    borderRadius: BorderRadius.all(Radius.circular(myRadius)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide:
+                    BorderSide(color: Colors.lightBlueAccent, width: 2.0),
+                    borderRadius: BorderRadius.all(Radius.circular(myRadius)),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 8.0,
+              ),
+              TextField(
+                maxLines: 4,
+                //controller: TextEditingController()..text = '',
+                onChanged: (value) {
+                  myNewBug.acceptanceCriteria = value;
                 },
                 decoration: InputDecoration(
                   hintText: 'Acceptance criteria',
-                  contentPadding:
-                  EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(myRadius)),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide:
-                    BorderSide(color: Colors.lightBlueAccent, width: 1.0),
-                    borderRadius: BorderRadius.all(Radius.circular(myRadius)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide:
-                    BorderSide(color: Colors.lightBlueAccent, width: 2.0),
-                    borderRadius: BorderRadius.all(Radius.circular(myRadius)),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-              TextField(
-                maxLines: 4,
-                //controller: TextEditingController()..text = '',
-                onChanged: (value) {
-                  myNewUserStory.conversation = value;
-                },
-                decoration: InputDecoration(
-                  hintText: 'Conversation',
                   contentPadding:
                   EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
                   border: OutlineInputBorder(
@@ -289,7 +275,7 @@ class _NewUserStoryState extends State<NewUserStory> {
                       keyboardType: TextInputType.numberWithOptions(),
                       //controller: TextEditingController()..text = 'flutter@anywhere.com',
                       onChanged: (value) {
-                        myNewUserStory.estimate  = int.parse(value);
+                        myNewBug.estimate  = int.parse(value);
                       },
                       decoration: InputDecoration(
                         hintText: 'points',
@@ -324,7 +310,7 @@ class _NewUserStoryState extends State<NewUserStory> {
                       keyboardType: TextInputType.numberWithOptions(),
                       //controller: TextEditingController()..text = 'flutter@anywhere.com',
                       onChanged: (value) {
-                        myNewUserStory.percentDone  = int.parse(value);
+                        myNewBug.percentDone  = int.parse(value);
                       },
                       decoration: InputDecoration(
                         hintText: 'percent',
@@ -367,7 +353,7 @@ class _NewUserStoryState extends State<NewUserStory> {
                       keyboardType: TextInputType.numberWithOptions(),
                       //controller: TextEditingController()..text = 'flutter@anywhere.com',
                       onChanged: (value) {
-                        myNewUserStory.priority  = int.parse(value);
+                        myNewBug.priority  = int.parse(value);
                       },
                       decoration: InputDecoration(
                         hintText: '1-10',
@@ -402,7 +388,7 @@ class _NewUserStoryState extends State<NewUserStory> {
                       keyboardType: TextInputType.numberWithOptions(),
                       //controller: TextEditingController()..text = 'flutter@anywhere.com',
                       onChanged: (value) {
-                        myNewUserStory.sprint  = int.parse(value);
+                        myNewBug.sprint  = int.parse(value);
                       },
                       decoration: InputDecoration(
                         hintText: '1,2,3...',
@@ -433,7 +419,7 @@ class _NewUserStoryState extends State<NewUserStory> {
                   value: 0,
                   groupValue: myRadioValue,
                   onChanged: (value) {
-                    myNewUserStory.phase = '0';
+                    myNewBug.phase = '0';
                     setState(() { myRadioValue = value; });
                   },
                 ),
@@ -445,7 +431,7 @@ class _NewUserStoryState extends State<NewUserStory> {
                   value: 1,
                   groupValue: myRadioValue,
                   onChanged: (value) {
-                    myNewUserStory.phase = '1';
+                    myNewBug.phase = '1';
                     setState(() { myRadioValue = value; });
                   },
                 ),
@@ -457,7 +443,7 @@ class _NewUserStoryState extends State<NewUserStory> {
                   value: 2,
                   groupValue: myRadioValue,
                   onChanged: (value) {
-                    myNewUserStory.phase = '2';
+                    myNewBug.phase = '2';
                     setState(() { myRadioValue = value; });
                   },
                 ),
@@ -469,7 +455,7 @@ class _NewUserStoryState extends State<NewUserStory> {
                   value: 3,
                   groupValue: myRadioValue,
                   onChanged: (value) {
-                    myNewUserStory.phase = '3';
+                    myNewBug.phase = '3';
                     setState(() { myRadioValue = value; });
                   },
                 ),

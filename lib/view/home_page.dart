@@ -47,9 +47,10 @@ class _MyHomePageState extends State<MyHomePage> {
             IconButton(
               tooltip: 'Login',
               icon: Icon(FontAwesomeIcons.signInAlt), onPressed: () {
-                Navigator.pushNamedAndRemoveUntil(context, LoginScreen.id,(Route<dynamic> route) => false);
-                },
+              Navigator.pushNamedAndRemoveUntil(context, LoginScreen.id,(Route<dynamic> route) => false);
+            },
             ),
+            
           ],
         ),
       ),

@@ -1,6 +1,6 @@
-class UserStory {
+class Bug {
   String id;
-  String userStoryTitle;
+  String bugTitle;
   String userRole;
   String userWant;
   String userBenefit;
@@ -15,9 +15,9 @@ class UserStory {
   List<dynamic> votes;
   String timeStampISO;
 
-  UserStory (id,userStoryTitle,userRole,userWant,userBenefit,acceptanceCriteria,conversation,estimate,phase,percentDone,priority,sprint,projectId) {
+  Bug (id,bugTitle,userRole,userWant,userBenefit,acceptanceCriteria,conversation,estimate,phase,percentDone,priority,sprint,projectId) {
     this.id = id;
-    this.userStoryTitle = userStoryTitle;
+    this.bugTitle = bugTitle;
     this.userRole = userRole;
     this.userWant = userWant;
     this.userBenefit = userBenefit;
@@ -31,9 +31,9 @@ class UserStory {
     this.projectId = projectId;
   }
 
-  UserStory.fromJson(Map json) {
+  Bug.fromJson(Map json) {
     this.id = json['_id'];
-    this.userStoryTitle = json['userStoryTitle'];
+    this.bugTitle = json['bugTitle'];
     this.userRole = json['userRole'];
     this.userBenefit = json['userBenefit'];
     this.acceptanceCriteria = json['acceptanceCriteria'];
@@ -49,23 +49,23 @@ class UserStory {
     this.timeStampISO = json['timeStampISO'];
   }
 
-  UserStory.fromJsonNested(Map json) {
-    this.id = json['userStory']['_id'];
-    this.userStoryTitle = json['userStory']['userStoryTitle'];
-    this.userRole = json['userStory']['userRole'];
-    this.userBenefit = json['userStory']['userBenefit'];
-    this.acceptanceCriteria = json['userStory']['acceptanceCriteria'];
-    this.conversation = json['userStory']['conversation'];
-    this.estimate = json['userStory']['estimate'];
-    this.userWant = json['userStory']['userWant'];
-    this.phase = json['userStory']['phase'];
-    this.percentDone = json['userStory']['percentDone'];
-    this.priority = json['userStory']['priority'];
-    this.sprint = json['userStory']['sprint'];
-    this.projectId = json['userStory']['projectId'];
-    this.votes = json['userStory']['votes'];
-    this.timeStampISO = json['userStory']['timeStampISO'];
+  Bug.fromJsonNested(Map json) {
+    this.id = json['bug']['_id'];
+    this.bugTitle = json['bug']['bugTitle'];
+    this.userRole = json['bug']['userRole'];
+    this.userBenefit = json['bug']['userBenefit'];
+    this.acceptanceCriteria = json['bug']['acceptanceCriteria'];
+    this.conversation = json['bug']['conversation'];
+    this.estimate = json['bug']['estimate'];
+    this.userWant = json['bug']['userWant'];
+    this.phase = json['bug']['phase'];
+    this.percentDone = json['bug']['percentDone'];
+    this.priority = json['bug']['priority'];
+    this.sprint = json['bug']['sprint'];
+    this.projectId = json['bug']['projectId'];
+    this.votes = json['bug']['votes'];
+    this.timeStampISO = json['bug']['timeStampISO'];
   }
 }
 
-var myUserStorys = [];
+var myBugs = [];

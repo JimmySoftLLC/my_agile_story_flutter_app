@@ -133,8 +133,10 @@ class _UserStoryCardState extends State<UserStoryCard> {
                       _userStoryTitle,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                          fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w700,
+                        //color: Colors.blue,
                       )),
+
                   SizedBox(
                     height: 8.0,
                   ),

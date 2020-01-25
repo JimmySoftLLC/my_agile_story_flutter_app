@@ -2,8 +2,9 @@ class Project {
   String id;
   String name;
   String description;
-  List<dynamic> developerIds;
   List<dynamic> userStoryIds;
+  List<dynamic> bugIds;
+  List<dynamic> developers;
   String timeStampISO;
 
   Project (id,name,description) {
@@ -16,8 +17,9 @@ class Project {
     this.id = json['_id'];
     this.name = json['name'];
     this.description = json['description'];
-    this.developerIds = json['developerIds'];
     this.userStoryIds = json['userStoryIds'];
+    this.bugIds = json['bugIds'];
+    this.developers = json['developers'];
     this.timeStampISO = json['timeStampISO'];
   }
 
@@ -25,8 +27,9 @@ class Project {
     this.id = json['project']['_id'];
     this.name = json['project']['name'];
     this.description = json['project']['description'];
-    this.developerIds = json['project']['developerIds'];
     this.userStoryIds = json['project']['userStoryIds'];
+    this.bugIds = json['project']['bugIds'];
+    this.developers = json['project']['developers'];
     this.timeStampISO = json['project']['timeStampISO'];
   }
 }

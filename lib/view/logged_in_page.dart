@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_agile_story_flutter_app/controller/api_requests.dart';
+import 'package:my_agile_story_flutter_app/controller/user_story_api.dart';
+import 'package:my_agile_story_flutter_app/controller/project_api.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:my_agile_story_flutter_app/controller/developer.dart';
 import 'package:my_agile_story_flutter_app/controller/user_story.dart';
@@ -155,7 +156,6 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> with WidgetsBindingObse
               onTap: (int index) {
                 myLastSelectedPhase = index.toString();
               },
-
               indicatorColor: Colors.white,
               tabs: [
                 Tab(icon: Icon(FontAwesomeIcons.list)),
@@ -263,6 +263,19 @@ class _MyLoggedInPageState extends State<MyLoggedInPage> with WidgetsBindingObse
                     } else {
                       messagePopup('Note',Colors.black,
                           'No project selected to add a user story to.   Create a new project or select an existing project under the ... menu first.',context);
+                    }
+                  },
+                ),
+                IconButton(
+                  tooltip: 'New bug',
+                  icon: Icon(FontAwesomeIcons.bug),
+                  onPressed: () {
+                    if (myLastSelectedProject != -1) {
+                      Navigator.pushNamedAndRemoveUntil(context,
+                          NewUserStory.id, (Route<dynamic> route) => false);
+                    } else {
+                      messagePopup('Note',Colors.black,
+                          'No project selected to add a bug to.   Create a new project or select an existing project under the ... menu first.',context);
                     }
                   },
                 ),
