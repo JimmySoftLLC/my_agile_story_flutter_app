@@ -140,6 +140,9 @@ class _UserStoryCardState extends State<UserStoryCard> {
                   SizedBox(
                     height: 8.0,
                   ),
+                  SizedBox(
+                    height: 8.0,
+                  ),
                   Text(
                     _userStoryBody,
                   ),

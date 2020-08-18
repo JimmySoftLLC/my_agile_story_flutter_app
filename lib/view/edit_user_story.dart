@@ -87,9 +87,11 @@ class _EditUserStoryState extends State<EditUserStory> {
                   ),
                 ),
               ),
+
               SizedBox(
                 height: 8.0,
               ),
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
